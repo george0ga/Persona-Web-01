@@ -182,7 +182,7 @@ async function checkCourts() {
     item.className = "court-check-status-item";
     item.innerHTML = `
       <span class="court-check-status-name">${court.name || court}</span>
-      <span class="court-check-status-status">Ожидание...</span>
+      <span class="court-check-status">Ожидание...</span>
     `;
     courtStatusList.appendChild(item);
   });
