@@ -10,10 +10,10 @@ def check_court_task(self, address: str, fullname_data: dict):
     """
     Задача для проверки одного суда.
     """
-    def set_status(text):
+    def set_status(text, court_name):
         self.update_state(
             state='PROGRESS',
-            meta={'status': text, 'address': address}
+            meta={'status': text, 'court_name': court_name}
         )
 
     try:
@@ -41,6 +41,12 @@ def verify_court_task(self, address: str):
             result = court_name.capitalize()
         else:
             result = "Не удалось получить название суда"
+            logger.info(f"[Celery] Задача {self.request.id} завершена с ошибкой")
+            return {
+            'status': 'error',
+            'result': result,
+            'task_id': self.request.id
+        }
 
         logger.info(f"[Celery] Задача {self.request.id} завершена успешно")
         return {

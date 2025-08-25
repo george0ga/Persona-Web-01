@@ -16,7 +16,7 @@ function applyTheme(isLight) {
   document.body.classList.toggle("light-theme", isLight);
   document.body.classList.toggle("dark-theme", !isLight);
 
-  const logoSrc = isLight ? "./assets/logo_new_light.png" : "./assets/logo_new.png";
+  const logoSrc = isLight ? "./assets/logos/logo_new_light.png" : "./assets/logos/logo_new.png";
   document.querySelectorAll("#logo-sidebar, #logo-welcome").forEach(img => { img.src = logoSrc; });
   const favicon = document.getElementById("favicon");
   if (favicon) favicon.href = logoSrc;
@@ -53,3 +53,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+

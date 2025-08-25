@@ -11,7 +11,8 @@ class Settings:
     # CORS настройки
     CORS_ORIGINS: List[str] = [
         "http://127.0.0.1:5500",
-        "http://localhost:5500"
+        "http://localhost:5500",
+        "null"  # разрешить запросы с file://
     ]
     CORS_METHODS: List[str] = ["GET", "POST"]
     CORS_HEADERS: List[str] = ["Content-Type", "Authorization"]

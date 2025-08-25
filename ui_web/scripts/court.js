@@ -85,6 +85,13 @@ async function addCourt() {
         input.placeholder = "Ожидайте...";
         input.disabled = true;
       }
+      else if (data.status === "error") {
+        checkBtn.disabled = false;
+        addBtn.disabled = false;
+        input.placeholder = "URL для проверки";
+        input.disabled = false;
+        showToast("Ошибка при проверке суда. Сайт не поддерживает парсинг.");
+      }
     };
 
     eventSource.onerror = (err) => {
@@ -174,8 +181,8 @@ async function checkCourts() {
     const item = document.createElement("div");
     item.className = "court-check-status-item";
     item.innerHTML = `
-      <span>${court.name || court}</span>
-      <span class="court-status">Ожидание...</span>
+      <span class="court-check-status-name">${court.name || court}</span>
+      <span class="court-check-status-status">Ожидание...</span>
     `;
     courtStatusList.appendChild(item);
   });

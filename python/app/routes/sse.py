@@ -41,11 +41,12 @@ async def stream_check_courts_result(task_id: str, request: Request):
             for subtask in group_result.results:
                 meta = subtask.info if isinstance(subtask.info, dict) else {}
                 status_text = meta.get("status", subtask.state)
+                court_name = meta.get("court_name", None)
                 # Отправляем только если статус изменился
                 if last_statuses.get(subtask.id) != status_text:
                     statuses.append({
                         "task_id": subtask.id,
-                        "address": getattr(subtask, "address", None),
+                        "court_name": court_name,
                         "state": subtask.state,
                         "status": status_text
                     })
