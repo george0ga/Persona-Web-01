@@ -17229,3 +17229,59 @@ TypeError: check_court_task.<locals>.set_status() missing 1 required positional 
 2025-08-26 01:20:28.724 | INFO     | app.parsers.courts.utils:check_502:42 - [check_502] Проверка на ошибку 502.
 2025-08-26 01:20:28.732 | SUCCESS  | app.parsers.courts.utils:check_502:48 - [check_502] Ошибка 502 отсутсвует.
 2025-08-26 01:20:28.732 | INFO     | app.parsers.courts.blue:parse_category:193 - [parse_category] Парсинг категории adm_parts__NAMESS.
+2025-08-26 01:20:36.185 | INFO     | app.parsers.courts.utils:check_503:23 - [check_503] Проверка на ошибку 503.
+2025-08-26 01:20:36.193 | INFO     | app.parsers.courts.utils:check_503:31 - [check_503] Ошибка 503 отсутсвует.
+2025-08-26 01:20:36.193 | INFO     | app.parsers.courts.utils:check_502:42 - [check_502] Проверка на ошибку 502.
+2025-08-26 01:20:36.199 | SUCCESS  | app.parsers.courts.utils:check_502:48 - [check_502] Ошибка 502 отсутсвует.
+2025-08-26 01:20:36.200 | INFO     | app.parsers.courts.blue:check_captcha:159 - [check_captcha] Проверка требования капчи.
+2025-08-26 01:20:36.205 | INFO     | app.parsers.courts.utils:check_503:23 - [check_503] Проверка на ошибку 503.
+2025-08-26 01:20:36.212 | INFO     | app.parsers.courts.utils:check_503:31 - [check_503] Ошибка 503 отсутсвует.
+2025-08-26 01:20:36.212 | INFO     | app.parsers.courts.utils:check_502:42 - [check_502] Проверка на ошибку 502.
+2025-08-26 01:20:36.218 | SUCCESS  | app.parsers.courts.utils:check_502:48 - [check_502] Ошибка 502 отсутсвует.
+2025-08-26 01:20:36.222 | INFO     | app.parsers.courts.blue:extract_total_pages:112 - [extract_total_pages] Получения кол-ва страниц.
+2025-08-26 01:20:36.233 | INFO     | app.parsers.courts.blue:get_all_cases:173 - [get_all_cases] Парсинг результата.
+2025-08-26 01:20:36.248 | INFO     | app.parsers.courts.utils:check_503:23 - [check_503] Проверка на ошибку 503.
+2025-08-26 01:20:36.254 | INFO     | app.parsers.courts.utils:check_503:31 - [check_503] Ошибка 503 отсутсвует.
+2025-08-26 01:20:36.254 | INFO     | app.parsers.courts.utils:check_502:42 - [check_502] Проверка на ошибку 502.
+2025-08-26 01:20:36.260 | SUCCESS  | app.parsers.courts.utils:check_502:48 - [check_502] Ошибка 502 отсутсвует.
+2025-08-26 01:20:36.260 | INFO     | app.parsers.courts.blue:check_captcha:159 - [check_captcha] Проверка требования капчи.
+2025-08-26 01:20:36.266 | INFO     | app.parsers.courts.utils:check_503:23 - [check_503] Проверка на ошибку 503.
+2025-08-26 01:20:36.273 | INFO     | app.parsers.courts.utils:check_503:31 - [check_503] Ошибка 503 отсутсвует.
+2025-08-26 01:20:36.273 | INFO     | app.parsers.courts.utils:check_502:42 - [check_502] Проверка на ошибку 502.
+2025-08-26 01:20:36.279 | SUCCESS  | app.parsers.courts.utils:check_502:48 - [check_502] Ошибка 502 отсутсвует.
+2025-08-26 01:20:36.280 | SUCCESS  | app.parsers.courts.blue:parse_court_blue:318 - [parse_court_blue] Проверка административыных правонарушений завершена
+2025-08-26 01:20:36.280 | INFO     | app.parsers.courts.blue:parse_court_blue:321 - [parse_court_blue] Проверка производств по делам
+2025-08-26 01:20:36.328 | INFO     | app.parsers.courts.utils:check_503:23 - [check_503] Проверка на ошибку 503.
+2025-08-26 01:20:36.349 | INFO     | app.parsers.courts.utils:check_503:31 - [check_503] Ошибка 503 отсутсвует.
+2025-08-26 01:20:36.349 | INFO     | app.parsers.courts.utils:check_502:42 - [check_502] Проверка на ошибку 502.
+2025-08-26 01:20:36.356 | SUCCESS  | app.parsers.courts.utils:check_502:48 - [check_502] Ошибка 502 отсутсвует.
+2025-08-26 01:20:36.356 | INFO     | app.parsers.courts.blue:check_captcha:159 - [check_captcha] Проверка требования капчи.
+2025-08-26 01:20:36.364 | INFO     | app.parsers.courts.utils:check_503:23 - [check_503] Проверка на ошибку 503.
+2025-08-26 01:20:36.371 | INFO     | app.parsers.courts.utils:check_503:31 - [check_503] Ошибка 503 отсутсвует.
+2025-08-26 01:20:36.372 | INFO     | app.parsers.courts.utils:check_502:42 - [check_502] Проверка на ошибку 502.
+2025-08-26 01:20:36.378 | SUCCESS  | app.parsers.courts.utils:check_502:48 - [check_502] Ошибка 502 отсутсвует.
+2025-08-26 01:20:36.378 | INFO     | app.parsers.courts.blue:parse_category:193 - [parse_category] Парсинг категории M_PARTS__NAMESS.
+2025-08-26 01:20:39.444 | INFO     | app.parsers.courts.utils:check_503:23 - [check_503] Проверка на ошибку 503.
+2025-08-26 01:20:39.452 | INFO     | app.parsers.courts.utils:check_503:31 - [check_503] Ошибка 503 отсутсвует.
+2025-08-26 01:20:39.452 | INFO     | app.parsers.courts.utils:check_502:42 - [check_502] Проверка на ошибку 502.
+2025-08-26 01:20:39.459 | SUCCESS  | app.parsers.courts.utils:check_502:48 - [check_502] Ошибка 502 отсутсвует.
+2025-08-26 01:20:39.460 | INFO     | app.parsers.courts.blue:check_captcha:159 - [check_captcha] Проверка требования капчи.
+2025-08-26 01:20:39.465 | INFO     | app.parsers.courts.utils:check_503:23 - [check_503] Проверка на ошибку 503.
+2025-08-26 01:20:39.471 | INFO     | app.parsers.courts.utils:check_503:31 - [check_503] Ошибка 503 отсутсвует.
+2025-08-26 01:20:39.471 | INFO     | app.parsers.courts.utils:check_502:42 - [check_502] Проверка на ошибку 502.
+2025-08-26 01:20:39.476 | SUCCESS  | app.parsers.courts.utils:check_502:48 - [check_502] Ошибка 502 отсутсвует.
+2025-08-26 01:20:39.479 | INFO     | app.parsers.courts.blue:extract_total_pages:112 - [extract_total_pages] Получения кол-ва страниц.
+2025-08-26 01:20:39.489 | INFO     | app.parsers.courts.blue:get_all_cases:173 - [get_all_cases] Парсинг результата.
+2025-08-26 01:20:39.504 | INFO     | app.parsers.courts.utils:check_503:23 - [check_503] Проверка на ошибку 503.
+2025-08-26 01:20:39.509 | INFO     | app.parsers.courts.utils:check_503:31 - [check_503] Ошибка 503 отсутсвует.
+2025-08-26 01:20:39.510 | INFO     | app.parsers.courts.utils:check_502:42 - [check_502] Проверка на ошибку 502.
+2025-08-26 01:20:39.515 | SUCCESS  | app.parsers.courts.utils:check_502:48 - [check_502] Ошибка 502 отсутсвует.
+2025-08-26 01:20:39.515 | INFO     | app.parsers.courts.blue:check_captcha:159 - [check_captcha] Проверка требования капчи.
+2025-08-26 01:20:39.519 | INFO     | app.parsers.courts.utils:check_503:23 - [check_503] Проверка на ошибку 503.
+2025-08-26 01:20:39.525 | INFO     | app.parsers.courts.utils:check_503:31 - [check_503] Ошибка 503 отсутсвует.
+2025-08-26 01:20:39.525 | INFO     | app.parsers.courts.utils:check_502:42 - [check_502] Проверка на ошибку 502.
+2025-08-26 01:20:39.531 | SUCCESS  | app.parsers.courts.utils:check_502:48 - [check_502] Ошибка 502 отсутсвует.
+2025-08-26 01:20:39.531 | SUCCESS  | app.parsers.courts.blue:parse_court_blue:329 - [parse_court_blue] Проверка производств по делам завершена
+2025-08-26 01:20:39.531 | SUCCESS  | app.parsers.courts.blue:parse_court_blue:331 - [parse_court_blue] Подготовка таблица для фронта
+2025-08-26 01:20:39.531 | SUCCESS  | app.parsers.courts.blue:parse_court_blue:341 - [parse_court_blue] Таблица готова.
+2025-08-26 01:20:41.672 | DEBUG    | app.parsers.courts.core:parse_courts:32 - [DRIVER] Завершение драйвера для https://k-h2.ros.msudrf.ru

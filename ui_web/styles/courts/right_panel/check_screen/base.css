@@ -10,14 +10,13 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
     border-radius: 12px;
     padding: 8px 12px;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .court-check-status-name {
     flex: 1 1 0;
-    font-size: 12px;
+    font-size: 14px;
 }
-
 
 .court-check-status {
     flex: 0 0 30%;
@@ -26,6 +25,12 @@
     font-weight: bold;
 }
 /* Светлая тема */ 
+
+body.light-theme .court-check-status-list{
+    list-style: none;
+    margin-bottom: 10px;
+}
+
 body.light-theme .court-check-status-item {
     display: flex;
     align-items: center;
@@ -34,11 +39,12 @@ body.light-theme .court-check-status-item {
     background-color: #ffffff;
     border-radius: 12px;
     padding: 8px 12px;
+    font-size: 14px;
 }
 
 body.light-theme .court-check-status-name {
     flex: 1 1 0;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 body.light-theme .court-check-status {
@@ -46,5 +52,5 @@ body.light-theme .court-check-status {
     color: #42a5f5;
     text-align: right;
     font-weight: bold;
-    font-size: 12px;
+    font-size: 14px;
 }
