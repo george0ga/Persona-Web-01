@@ -1,0 +1,28 @@
+.bad-wave {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.bad-bar {
+  width: 20px;
+  height: 50%;
+  margin: 0 1.5px;
+  background-color: rgb(103, 103, 103);
+  border-radius: 5px;
+}
+
+.bad-bar:nth-child(2) {
+  height: 50%;
+}
+
+.bad-bar:nth-child(3) {
+  height: 75%;
+}
+
+.bad-bar:nth-child(4) {
+  height: 100%;
+}
+

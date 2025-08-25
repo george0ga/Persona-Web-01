@@ -1,0 +1,42 @@
+.unavailable-wave {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.unavailable-bar {
+  width: 20px;
+  height: 50%;
+  margin: 0 1.5px;
+  background-color: rgb(103, 103, 103);
+  border-radius: 5px;
+  animation: unavailable-wave-animation 1s ease-in-out infinite;
+}
+
+.unavailable-bar:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.unavailable-bar:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.unavailable-bar:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+@keyframes unavailable-wave-animation {
+  0% {
+    height: 20%;
+  }
+
+  50% {
+    height: 100%;
+  }
+
+  100% {
+    height: 20%;
+  }
+}

@@ -1,0 +1,185 @@
+2025-08-12 19:54:57.678 | INFO     | __main__:<module>:65 -  Запуск FastAPI на http://0.0.0.0:8000
+2025-08-12 19:54:57.777 | INFO     | __main__:lifespan:27 -  Запуск FastAPI
+2025-08-12 19:55:18.739 | ERROR    | handlers.errors:global_exception_handler:14 - 
+        КРИТИЧЕСКАЯ ОШИБКА!
+        URL: /test_sse
+        Метод: GET
+        Ошибка: 'Limiter' object has no attribute 'check_request_limit'
+        Тип ошибки: AttributeError
+        
+  + Exception Group Traceback (most recent call last):
+  |
+  |   File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_utils.py", line 76, in collapse_excgroups
+  |     yield
+  |   File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\base.py", line 177, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |                │     │                      └ <anyio._backends._asyncio.TaskGroup object at 0x000001DA4E6CB4D0>
+  |                │     └ <function create_task_group at 0x000001DA4D2C67A0>
+  |                └ <module 'anyio' from 'C:\\Users\\gorgi\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\anyio\\__init__.py'>
+  |   File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\anyio\_backends\_asyncio.py", line 772, in __aexit__
+  |     raise BaseExceptionGroup(
+  |
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |
+    |   File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    |     await self.app(scope, receive, _send)
+    |           │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001DA4E6D72E0>
+    |           │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001DA4E6CA...
+    |           │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+    |           │    └ <starlette.middleware.base.BaseHTTPMiddleware object at 0x000001DA4E6C9160>
+    |           └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001DA4E6C92B0>
+    |   File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\base.py", line 176, in __call__
+    |     with recv_stream, send_stream, collapse_excgroups():
+    |          │            │            └ <function collapse_excgroups at 0x000001DA4D393880>
+    |          │            └ MemoryObjectSendStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_receive...
+    |          └ MemoryObjectReceiveStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_rece...
+    |   File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
+    |     self.gen.throw(value)
+    |     │    │   │     └ ExceptionGroup('unhandled errors in a TaskGroup', [AttributeError("'Limiter' object has no attribute 'check_request_limit'")])
+    |     │    │   └ <method 'throw' of 'generator' objects>
+    |     │    └ <generator object collapse_excgroups at 0x000001DA07D26E90>
+    |     └ <contextlib._GeneratorContextManager object at 0x000001DA4E696970>
+    |   File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_utils.py", line 82, in collapse_excgroups
+    |     raise exc
+    |   File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\base.py", line 178, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                      │    │             │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x000001DA4E6D7420>
+    |                      │    │             └ <starlette.middleware.base._CachedRequest object at 0x000001DA4E6C9FD0>
+    |                      │    └ <function setup_rate_limit_middleware.<locals>.rate_limit_middleware at 0x000001DA4E5C2520>
+    |                      └ <starlette.middleware.base.BaseHTTPMiddleware object at 0x000001DA4E6C9160>
+    |
+    |   File "G:\projects\Python_Parse\python\app\middleware\rate_limit.py", line 39, in rate_limit_middleware
+    |     await limiter.check_request_limit(request)
+    |           │                           └ <starlette.middleware.base._CachedRequest object at 0x000001DA4E6C9FD0>
+    |           └ <slowapi.extension.Limiter object at 0x000001DA4E4F6A50>
+    |
+    | AttributeError: 'Limiter' object has no attribute 'check_request_limit'
+    +------------------------------------
+
+
+During handling of the above exception, another exception occurred:
+
+
+Traceback (most recent call last):
+
+  File "G:\projects\Python_Parse\python\app\main.py", line 66, in <module>
+    uvicorn.run(app, host=settings.HOST, port=settings.PORT)
+    │       │   │         │        │          │        └ 8000
+    │       │   │         │        │          └ <config.settings.Settings object at 0x000001DA4D30FCB0>
+    │       │   │         │        └ '0.0.0.0'
+    │       │   │         └ <config.settings.Settings object at 0x000001DA4D30FCB0>
+    │       │   └ <fastapi.applications.FastAPI object at 0x000001DA4E600050>
+    │       └ <function run at 0x000001DA0A21BE20>
+    └ <module 'uvicorn' from 'C:\\Users\\gorgi\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\uvicorn\\__init__....
+
+  File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\uvicorn\main.py", line 580, in run
+    server.run()
+    │      └ <function Server.run at 0x000001DA0A1B54E0>
+    └ <uvicorn.server.Server object at 0x000001DA4E600AD0>
+  File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\uvicorn\server.py", line 66, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           │       │   │    │             └ None
+           │       │   │    └ <function Server.serve at 0x000001DA0A1B5580>
+           │       │   └ <uvicorn.server.Server object at 0x000001DA4E600AD0>
+           │       └ <function run at 0x000001DA07AFA3E0>
+           └ <module 'asyncio' from 'C:\\Users\\gorgi\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\__init__.py'>
+  File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x000001DA4E5EE340>
+           │      └ <function Runner.run at 0x000001DA09AA4EA0>
+           └ <asyncio.runners.Runner object at 0x000001DA4E600D70>
+  File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\asyncio\runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-p...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x000001DA09A9EA20>
+           │    └ <ProactorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x000001DA4E600D70>
+  File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 706, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x000001DA09A9E980>
+    └ <ProactorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 677, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x000001DA09AA47C0>
+    └ <ProactorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 2034, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x000001DA09937560>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x000001DA4E5D26B0>()>
+  File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\asyncio\events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x000001DA4E5D26B0>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x000001DA4E5D26B0>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x000001DA4E5D26B0>()>
+  File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 403, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+                   └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000001DA4E603CB0>
+  File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+                 │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001DA4E6CA120>>
+                 │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001DA4E6CA...
+                 │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+                 │    └ <fastapi.applications.FastAPI object at 0x000001DA4E600050>
+                 └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000001DA4E603CB0>
+  File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001DA4E6CA120>>
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001DA4E6CA...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+  File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001DA4E6CA120>>
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001DA4E6CA...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001DA4E6C92B0>
+          └ <fastapi.applications.FastAPI object at 0x000001DA4E600050>
+> File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001DA4E6D72E0>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.h11_impl.RequestResponseCycle object at 0x000001DA4E6CA...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 8000), 'cl...
+          │    └ <starlette.middleware.base.BaseHTTPMiddleware object at 0x000001DA4E6C9160>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001DA4E6C92B0>
+  File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\base.py", line 176, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+         │            │            └ <function collapse_excgroups at 0x000001DA4D393880>
+         │            └ MemoryObjectSendStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_receive...
+         └ MemoryObjectReceiveStream(_state=MemoryObjectStreamState(max_buffer_size=0, buffer=deque([]), open_send_channels=0, open_rece...
+  File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\contextlib.py", line 162, in __exit__
+    self.gen.throw(value)
+    │    │   │     └ ExceptionGroup('unhandled errors in a TaskGroup', [AttributeError("'Limiter' object has no attribute 'check_request_limit'")])
+    │    │   └ <method 'throw' of 'generator' objects>
+    │    └ <generator object collapse_excgroups at 0x000001DA07D26E90>
+    └ <contextlib._GeneratorContextManager object at 0x000001DA4E696970>
+  File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\_utils.py", line 82, in collapse_excgroups
+    raise exc
+  File "C:\Users\gorgi\AppData\Local\Programs\Python\Python313\Lib\site-packages\starlette\middleware\base.py", line 178, in __call__
+    response = await self.dispatch_func(request, call_next)
+                     │    │             │        └ <function BaseHTTPMiddleware.__call__.<locals>.call_next at 0x000001DA4E6D7420>
+                     │    │             └ <starlette.middleware.base._CachedRequest object at 0x000001DA4E6C9FD0>
+                     │    └ <function setup_rate_limit_middleware.<locals>.rate_limit_middleware at 0x000001DA4E5C2520>
+                     └ <starlette.middleware.base.BaseHTTPMiddleware object at 0x000001DA4E6C9160>
+
+  File "G:\projects\Python_Parse\python\app\middleware\rate_limit.py", line 39, in rate_limit_middleware
+    await limiter.check_request_limit(request)
+          │                           └ <starlette.middleware.base._CachedRequest object at 0x000001DA4E6C9FD0>
+          └ <slowapi.extension.Limiter object at 0x000001DA4E4F6A50>
+
+AttributeError: 'Limiter' object has no attribute 'check_request_limit'
+2025-08-12 20:10:23.091 | INFO     | __main__:lifespan:31 -  Завершение FastAPI
+2025-08-12 20:10:29.503 | INFO     | __main__:<module>:65 -  Запуск FastAPI на http://0.0.0.0:8000
+2025-08-12 20:10:29.542 | INFO     | __main__:lifespan:27 -  Запуск FastAPI
+2025-08-12 20:10:42.993 | INFO     | __main__:lifespan:31 -  Завершение FastAPI
+2025-08-12 20:13:08.396 | INFO     | __main__:<module>:65 -  Запуск FastAPI на http://0.0.0.0:8000
+2025-08-12 20:13:08.432 | INFO     | __main__:lifespan:27 -  Запуск FastAPI
+2025-08-12 20:13:59.780 | INFO     | __main__:lifespan:31 -  Завершение FastAPI
+2025-08-12 20:24:40.497 | INFO     | __main__:<module>:51 -  Запуск FastAPI на http://0.0.0.0:8000
+2025-08-12 20:29:18.423 | INFO     | handlers.health:check_health_access:32 - Health check запрос с разрешенного IP: 127.0.0.1
+2025-08-12 20:29:20.266 | INFO     | handlers.health:check_health_access:32 - Health check запрос с разрешенного IP: 127.0.0.1
+2025-08-12 20:29:29.036 | INFO     | handlers.health:check_health_access:32 - Health check запрос с разрешенного IP: 127.0.0.1
+2025-08-12 20:42:54.258 | INFO     | __main__:lifespan:31 -  Завершение FastAPI

@@ -1,0 +1,10 @@
+app==0.0.1
+fake_useragent==2.2.0
+fastapi==0.116.1
+loguru==0.7.3
+parsers==0.1
+pydantic==2.11.7
+selenium==4.34.2
+sse_starlette==2.4.1
+uvicorn==0.35.0
+webdriver_manager==4.0.2

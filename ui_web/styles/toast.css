@@ -1,0 +1,68 @@
+/* Контейнер для тостов */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none; /* чтобы клики проходили сквозь */
+}
+
+/* Сам тост */
+.toast-message {
+  background: #333;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  pointer-events: auto; /* Чтобы можно было кликать для закрытия */
+}
+
+.toast-message.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast-message.success {
+  background: #28a745;
+}
+
+.toast-message.error {
+  background: #dc3545;
+}
+
+.toast-message.info {
+  background: #007bff;
+}
+
+/* Контейнер тоста */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #323232;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px); /* выезжает снизу */
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 2000;
+  max-width: 300px;
+  text-align: center;
+}
+
+/* Когда показываем тост */
+.toast-container.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+

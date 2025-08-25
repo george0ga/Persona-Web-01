@@ -1,0 +1,67 @@
+/*База*/
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Rubik', sans-serif;
+}
+
+.hidden { display: none !important; }
+
+.screen {
+  display: flex;
+  height: 100vh;
+  padding: 16px;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+}
+
+body {
+  height: 100%;
+  color: white;
+  background-color: #202020;
+  font-family: 'Rubik', sans-serif;
+}
+
+body.dark-theme {
+  background-color: #202020;
+  color: white;
+}
+
+body.light-theme {
+  background-color: #f3f3f3;
+  color: #111;
+}
+
+.welcome-logo {
+  width: 100px;
+  margin-bottom: 20px;
+}
+
+.logo-sidebar {
+  width: 120px;
+  height: 60px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url('./assets/logo_new.png');
+}
+
+body.light-theme .logo-sidebar {
+  background-image: url('./assets/logo_new_light.png');
+}
+
+
+.label-text {
+  color: #eee;
+}
+
+body.light-theme .label-text {
+  color: #111;
+}
+
+body.light-theme .material-symbols-outlined,
+body.light-theme .material-symbols-rounded {
+  color: #000;
+}
+

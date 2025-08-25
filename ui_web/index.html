@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Persona</title>
+  <link id="favicon" rel="icon" type="image/png" href="assets/logo_new.png">
+  <!-- Основной шрифт приложения -->
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- 1. Базовые стили -->
+  <link rel="stylesheet" href="styles/base.css">
+
+  <!-- 2. Стили для компонентов и элементов -->
+  <link rel="stylesheet" href="styles/buttons.css">
+  <link rel="stylesheet" href="styles/input.css">
+  <link rel="stylesheet" href="styles/toast.css">
+  <link rel="stylesheet" href="styles/switches.css">
+
+  <!-- 3. Стили для отдельных блоков приложения -->
+  <link rel="stylesheet" href="styles/sidebar.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/info_box.css">
+  <link rel="stylesheet" href="styles/courts/animations.css">
+  <link rel="stylesheet" href="styles/dashboard.css">
+  <link rel="stylesheet" href="styles/settings.css">
+  <link rel="stylesheet" href="styles/courts/base.css">
+  <link rel="stylesheet" href="styles/courts/left_panel/court_status.css">
+  <link rel="stylesheet" href="styles/courts/left_panel/status_wave.css">
+  <link rel="stylesheet" href="styles/hamster_loader.css">
+
+  <!-- Подключение иконок Material Symbols (Rounded и Outlined) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+</head>
+<body>  
+  <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
+  <aside class="sidebar collapsed">
+    <header class="sidebar-header">
+      <a class="header-logo" onclick="goToWelcomeScreen()">
+          <img id="logo-sidebar" src="./assets/logo_new.png" alt="AtonCheck">
+      </a>
+      <button class="toggler sidebar-toggler">
+        <span class="material-symbols-rounded">chevron_left</span>
+      </button>
+      <button class="toggler menu-toggler">
+        <span class="material-symbols-rounded">menu</span>
+      </button>
+    </header>
+    <nav class="sidebar-nav">
+      <ul class="nav-list primary-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-target="courts-screen">
+            <span class="material-symbols-outlined">balance</span>
+            <span class="nav-label">Суды</span>
+          </a>
+          <span class="nav-tooltip">Суды</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-target="318-screen">
+            <span class="material-symbols-outlined">graph_3</span>
+            <span class="nav-label">Проект 318</span>
+          </a>
+          <span class="nav-tooltip">Проект 318</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-target="candidate-screen">
+            <span class="material-symbols-outlined">article_person</span>
+            <span class="nav-label">Кандидаты</span>
+          </a>
+          <span class="nav-tooltip">Кандидаты</span>
+        </li>
+        <li class="nav-item">
+          <a href="" class="nav-link" data-target="library-screen">
+            <span class="material-symbols-outlined">menu_book</span>
+            <span class="nav-label">Полезное</span>
+          </a>
+          <span class="nav-tooltip">Полезное</span>
+        </li>
+      </ul>
+      <!-- Secondary bottom nav -->
+      <ul class="nav-list secondary-nav">
+        <li class="nav-item">
+          <a class="nav-link" id="sidebar-help-btn">
+            <span class="material-symbols-outlined">help</span>
+            <span class="nav-label">Помощь</span>
+          </a>
+          <span class="nav-tooltip">Помощь</span>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" id="sidebar-theme-btn" type="button">
+            <span id="theme-switch-icon" class="nav-icon material-symbols-rounded">dark_mode</span>
+            <span id="theme-switch-label" class="nav-label">Тема</span>
+          </button>
+          <span class="nav-tooltip">Тема</span>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" id="sidebar-dashboard-btn">
+            <span class="material-symbols-outlined">analytics</span>
+            <span class="nav-label">Дашборд</span>
+          </button>
+          <span class="nav-tooltip">Дашборд</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="sidebar-settings-btn">
+            <span class="nav-icon material-symbols-rounded">settings</span>
+            <span class="nav-label">Настройки</span>
+          </a>
+          <span class="nav-tooltip">Настройки</span>
+        </li>
+        
+      </ul>
+    </nav>
+  </aside> 
+  <!-- Единый контейнер для всех экранов -->
+  <div id="app-screens">
+    <!-- Экран приветствия -->
+    <div class="screen fade-in" id="welcome-screen">
+      <div class="info-box">
+        <img id="logo-welcome" class="welcome-logo" src="./assets/logo_new.png" alt="Logo">
+        <h1 style="font-size: 22px; margin-bottom: 10px;">Добро пожаловать в Persona!</h1>
+        <p style="opacity: 0.8;">
+          Вы можете выбрать нужный раздел в меню слева.<br>
+          Приложение находится в стадии активной разработки.Если у вас есть вопросы или идеи — напишите мне в личные сообщения.<br>
+          <br>
+        </p>
+      </div>
+    </div>
+    <!-- Раздел 318 -->
+    <div class="screen hidden fade-in" id="318-screen">
+      <div class="info-box">
+        <h1 style="font-size: 22px; margin-bottom: 10px;">В РАЗРАБОТКЕ</h1>
+      </div>
+    </div>
+    <!-- Раздел кандидатов -->
+    <div class="screen hidden fade-in" id="candidate-screen">
+      <div class="info-box">
+        <h1 style="font-size: 22px; margin-bottom: 10px;">В РАЗРАБОТКЕ</h1>
+      </div>
+    </div>
+    <!-- Раздел библиотеки -->
+    <div class="screen hidden fade-in" id="library-screen">
+      <div class="info-box">
+        <h1 style="font-size: 22px; margin-bottom: 10px;">В разработке. Здесь планируется разместить материалы, ссылки и прочие ресурсы для работы.</h1>
+      </div>
+    </div>
+    <!-- Раздел судов -->
+    <div class="screen hidden fade-in" id="courts-screen">
+      <div id="module-courts" class="module panel-wrapper">
+        <div class="left-panel">
+          <div class="left-panel-box">
+            <div class="input-group">
+              <h2 class="input-group-title">Проверка судов</h2>
+              <input id="surname" placeholder="Фамилия">
+              <input id="name" placeholder="Имя">
+              <input id="patronymic" placeholder="Отчество">
+              <div class="input-row">
+                <input id="court_link" placeholder="URL для проверки" style="flex: 1;">
+                <button id="btn-add-court" class="button-loader" onclick="addCourt()">
+                  <span class="btn-text">Добавить</span>
+                </button>
+              </div>
+              <div id="court_list" class="court-list"></div>
+              <div id="court-error-message"></div>
+              <div class="buttons">
+                <button id="btn-check-courts" onclick="checkCourts()">Проверить суды</button>
+              </div>
+            </div>
+          </div>
+          <div class="left-panel-box">
+            <div class="court-status-box">
+              <h2 class="input-group-title">Статус судов</h2>
+              <div id="court-status-list" class="court-status-list">
+                <div class="court-status-list-item">
+                  <span class="court-status-list-item-label">Загрузка очереди</span>
+                  <div class="court-status-list-item-signal">
+                    <div class="unavailable-wave">
+                      <div class="unavailable-bar"></div>
+                      <div class="unavailable-bar"></div>
+                      <div class="unavailable-bar"></div>
+                      <div class="unavailable-bar"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="court-status-list-item">
+                  <span class="court-status-list-item-label">Доступность судов</span>
+                  <div class="court-status-list-item-signal">
+                    <div class="unavailable-wave">
+                      <div class="unavailable-bar"></div>
+                      <div class="unavailable-bar"></div>
+                      <div class="unavailable-bar"></div>
+                      <div class="unavailable-bar"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="right-panel">
+          <div id="result" style="padding: 20px; overflow-y: auto;"> 
+
+            <!-- Этап 1: начальное состояние -->
+            <div id="initial-placeholder" class="placeholder-state">
+              <span class="material-symbols-rounded initial-icon spin-hourglass">hourglass_empty</span>
+              <p class="initial-text">Проверки ещё не запущены</p>
+            </div>
+
+            <!-- Этап 2: во время проверки -->
+            <div id="checking-state" class="checking-state hidden">
+              <div class="checking-top-block"> 
+                <div aria-label="Orange and tan hamster running in a metal wheel" role="img" class="wheel-and-hamster">
+                  <div class="wheel"></div>
+                  <div class="hamster">
+                    <div class="hamster__body">
+                      <div class="hamster__head">
+                        <div class="hamster__ear"></div>
+                        <div class="hamster__eye"></div>
+                        <div class="hamster__nose"></div>
+                      </div>
+                      <div class="hamster__limb hamster__limb--fr"></div>
+                      <div class="hamster__limb hamster__limb--fl"></div>
+                      <div class="hamster__limb hamster__limb--br"></div>
+                      <div class="hamster__limb hamster__limb--bl"></div>
+                      <div class="hamster__tail"></div>
+                    </div>
+                  </div>
+                  <div class="spoke"></div>
+
+              </div>
+              </div>
+              <div class="checkong-block-bottom">
+                <div class="checkong-block-bottom-background">
+                  <div id="court-check-status-list" class="court-check-status-list">
+                    <!-- Элементы статусов судов появятся здесь -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Этап 3: после проверки -->
+            <div id="result-ready" class="result-ready hidden">
+              <div class="court-result-info-box" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <svg id="success_svg" class="success-svg" width="128" height="128" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 10px;">
+                  <circle cx="12" cy="12" r="10" fill="none" stroke="#4CAF50" stroke-width="2"/>
+                  <path d="M7 12l3 3l7-7" fill="none" stroke="#4CAF50" stroke-width="2" 
+                        stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <p style="margin-top: 10px; color: #888; text-align: center;">
+                  Проверка завершена успешно!
+                </p>
+                <button id="btn-courts-detail" onclick="openSavedCourtResult()" style="margin-top: 20px;">Показать результат</button>
+              </div>
+            </div>            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  
+    <!-- Компонент уведомлений (Toast) -->
+    <div id="toast-container" class="toast-container"></div>
+  </div>
+  <!-- Всплывающее окно с результатами проверки судов -->
+  <div id="court-result-overlay" class="court-result-overlay">
+    <div class="court-result-window">
+      <div class="court-result-header">
+        <h2 class="court-result-title">Результат проверки судов</h2>
+        <button class="court-result-close" onclick="closeCourtResultModal()">✖</button>
+      </div>
+      <div class="court-result-body">
+        <div id="court-result-content"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Всплывающее окно настроек-->
+  <div id="settings-overlay" class="modal-overlay" class="overlay hidden">
+    <div class="modal-window settings-modal">
+      <h2>Настройки</h2>
+
+      <!-- Headless режим 
+      
+      <div class="setting-item">
+        <div class="switch-inline">
+          <input type="checkbox" id="headless-toggle" class="hidden-checkbox">
+          <label for="headless-toggle" class="toggleSwitch"></label>
+          <span class="label-text">Headless режим</span>
+          <div class="tooltip">
+            <div class="icon">?</div>
+            <div class="tooltiptext">Отключает отображение окон браузера при работе парсеров. (Требуется перезапуск)</div>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- Переключатель тёмной темы -->
+      <div class="setting-item">
+        <div class="switch-inline">
+          <div class="toggle-switch">
+            <label class="switch-label">
+              <input type="checkbox" class="checkbox" id="theme-toggle">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <span class="label-text">Выбор темы</span>
+        </div>
+      </div>
+      
+      <div class="modal-buttons">
+        <button onclick="saveSettings()"> Применить и сохранить</button>
+        <button onclick="closeSettings()">Выход</button>
+      </div>
+    </div>
+  </div>
+  <!-- Всплывающее окно с дашбордом -->
+  <div id="dashboard-overlay" class="modal-overlay hidden">
+    <div class="modal-window dashboard-modal">
+      <div class="modal-window dashboard-modal-top">
+        <h2 class="dashboard-modal-top-title">Дашборд</h2>
+      </div>
+      <div class="modal-window dashboard-modal-main">
+      </div>
+    </div>
+  </div>
+<script src="scripts/config.js"></script>
+<script src="scripts/ui.js"></script>
+<script src="scripts/dashboard.js"></script>
+<script src="scripts/settings.js"></script>
+<script src="scripts/sidebar.js"></script>
+<script src="scripts/signal_bars.js"></script>
+<script src="scripts/court.js"></script>
+<script src="scripts/sse.js"></script>
+<script src="renderer.js"></script>
+</body>
+</html>

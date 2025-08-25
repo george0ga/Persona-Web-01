@@ -1,0 +1,59 @@
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+button {
+  padding: 10px;
+  background-color: #474747;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  
+  font-family: 'Rubik', sans-serif;
+}
+
+button:hover {
+  background-color: #2c2c2c;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  width: 24px;
+  height: 24px;
+  background-color: transparent;
+  border: none;
+  color: #aaa;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.btn:hover {
+  background-color: #333;
+  color: #fff;
+}
+
+.btn.close:hover {
+  background-color: #b00020;
+}
+
+body.light-theme button {
+  background-color: #ddd;
+  color: #000;
+}

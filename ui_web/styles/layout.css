@@ -1,0 +1,50 @@
+.panel-wrapper {
+  display: flex;
+  gap: 20px;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.main-content {
+  display: flex;
+  height: 100vh;
+  gap: 20px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+input.error {
+  border: 1px solid #ff5555;
+}
+.placeholder-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  margin-top: 40px;
+}
+
+.initial-icon {
+  font-size: 64px;
+  color: #888;
+}
+
+.initial-text {
+  margin-top: 10px;
+  color: #888;
+  text-align: center;
+  font-size: 18px;       /* увеличим шрифт */
+  font-weight: 500;      /* сделаем чуть жирнее */
+  max-width: 260px;      /* ограничим ширину для аккуратности */
+}
+
+#initial-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 40px 0;
+  text-align: center;
+}
