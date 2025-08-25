@@ -25,9 +25,11 @@
   <link rel="stylesheet" href="styles/courts/animations.css">
   <link rel="stylesheet" href="styles/dashboard.css">
   <link rel="stylesheet" href="styles/settings.css">
+  <link rel="stylesheet" href="styles/screens/debug.css">
   <link rel="stylesheet" href="styles/courts/base.css">
   <link rel="stylesheet" href="styles/courts/left_panel/court_status.css">
   <link rel="stylesheet" href="styles/courts/left_panel/status_wave.css">
+  <link rel="stylesheet" href="styles/courts/right_panel/check_screen/base.css">
   <link rel="stylesheet" href="styles/hamster_loader.css">
 
   <!-- Подключение иконок Material Symbols (Rounded и Outlined) -->
@@ -103,11 +105,11 @@
           <span class="nav-tooltip">Дашборд</span>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="sidebar-settings-btn">
-            <span class="nav-icon material-symbols-rounded">settings</span>
-            <span class="nav-label">Настройки</span>
+          <a class="nav-link" id="sidebar-debug-btn">
+            <span class="material-symbols-outlined">bug_report</span>
+            <span class="nav-label">Debug меню</span>
           </a>
-          <span class="nav-tooltip">Настройки</span>
+          <span class="nav-tooltip">Debug меню</span>
         </li>
         
       </ul>
@@ -275,27 +277,12 @@
       </div>
     </div>
   </div>
-  <!-- Всплывающее окно настроек-->
-  <div id="settings-overlay" class="modal-overlay" class="overlay hidden">
-    <div class="modal-window settings-modal">
-      <h2>Настройки</h2>
-
-      <!-- Headless режим 
-      
-      <div class="setting-item">
-        <div class="switch-inline">
-          <input type="checkbox" id="headless-toggle" class="hidden-checkbox">
-          <label for="headless-toggle" class="toggleSwitch"></label>
-          <span class="label-text">Headless режим</span>
-          <div class="tooltip">
-            <div class="icon">?</div>
-            <div class="tooltiptext">Отключает отображение окон браузера при работе парсеров. (Требуется перезапуск)</div>
-          </div>
-        </div>
-      </div> -->
-
+  <!-- Всплывающее окно отладки-->
+  <div id="debug-overlay" class="modal-overlay hidden">
+    <div class="modal-window debug-modal">
+      <h2>Отладка</h2>
       <!-- Переключатель тёмной темы -->
-      <div class="setting-item">
+      <div class="debug-item">
         <div class="switch-inline">
           <div class="toggle-switch">
             <label class="switch-label">
@@ -306,11 +293,7 @@
           <span class="label-text">Выбор темы</span>
         </div>
       </div>
-      
-      <div class="modal-buttons">
-        <button onclick="saveSettings()"> Применить и сохранить</button>
-        <button onclick="closeSettings()">Выход</button>
-      </div>
+    
     </div>
   </div>
   <!-- Всплывающее окно с дашбордом -->
@@ -326,6 +309,7 @@
 <script src="scripts/config.js"></script>
 <script src="scripts/ui.js"></script>
 <script src="scripts/dashboard.js"></script>
+<script src="scripts/debug.js"></script>
 <script src="scripts/settings.js"></script>
 <script src="scripts/sidebar.js"></script>
 <script src="scripts/signal_bars.js"></script>

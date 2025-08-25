@@ -61,26 +61,3 @@ function goToWelcomeScreen() {
   document.querySelectorAll(".screen").forEach(screen => screen.classList.add("hidden"));
   document.getElementById("welcome-screen").classList.remove("hidden");
 }
-
-
-// Кнопка "Настройки" в сайдбаре
-document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("sidebar-settings-btn");
-  if (btn) {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      openSettings();
-    });
-  }
-});
-
-// Кнопка "Дашборд" в сайдбаре
-document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("sidebar-dashboard-btn");
-  if (btn) {
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      openDashboard();
-    });
-  }
-});
