@@ -176,7 +176,6 @@ async function checkCourts() {
   showCheckingState();
   const courtStatusList = document.getElementById("court-check-status-list");
   courtStatusList.innerHTML = "";
-git
   courts.forEach(court => {
     const item = document.createElement("div");
     item.className = "court-check-status-item";
@@ -197,16 +196,14 @@ git
         fullname: { surname, name, patronymic }
       })
     });
-    console.log("Fetch response:", response);
     const result = await response.json();
-    console.log("Fetch result:", result);
     if (!result.data || !result.data.task_id) {
       showToast(result.message || "Не удалось получить task_id.");
       checkBtn.disabled = false;
       addBtn.disabled = false;
       return;
     }
-    console.log("Fetch result:", result);
+    
     // 2. Ждем результат через SSE
     const eventSource = new EventSource(`${API_URL}/courts/check/stream/${result.data.task_id}`);
     eventSource.onmessage = (event) => {
