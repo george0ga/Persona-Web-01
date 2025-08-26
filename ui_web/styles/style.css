@@ -946,6 +946,7 @@ body.light-theme .material-symbols-rounded {
 body.light-theme .info-box {
   background-color: #ffffff;
   color: #000000;
+  box-shadow: 0 4px 120px rgba(0, 0, 0, 0.993);
 }
 
 /*хомяк*/

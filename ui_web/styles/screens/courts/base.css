@@ -198,7 +198,6 @@
   display: flex;
   flex-direction: column;
   gap: 12px;           /* расстояние между элементами */
-  overflow: hidden; 
 }
 
 .input-group-title {
@@ -224,7 +223,7 @@
 body.light-theme .left-panel-box {
   background: #e9e9e9;
   color: #222;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 0px 8px rgba(0, 0, 0, 0.248);
 }
 
 /* Светлая тема для .input-group */

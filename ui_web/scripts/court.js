@@ -176,7 +176,7 @@ async function checkCourts() {
   showCheckingState();
   const courtStatusList = document.getElementById("court-check-status-list");
   courtStatusList.innerHTML = "";
-
+git
   courts.forEach(court => {
     const item = document.createElement("div");
     item.className = "court-check-status-item";
