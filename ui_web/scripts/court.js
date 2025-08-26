@@ -224,7 +224,7 @@ async function checkCourts() {
       addBtn.disabled = false;
       return;
     }
-    
+    saveTaskId(result.data.task_id);
     // 2. Ждем результат через SSE
     const eventSource = new EventSource(`${API_URL}/courts/check/stream/${result.data.task_id}`);
     eventSource.onmessage = (event) => {
@@ -309,7 +309,7 @@ function openSavedCourtResult() {
 
   // Сначала сбрасываем состояние
   modal.classList.remove("active");
-
+  clearTaskId();
   // Плавное открытие
   requestAnimationFrame(() => {
     modal.classList.add("active");

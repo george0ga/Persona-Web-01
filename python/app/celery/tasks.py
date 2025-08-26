@@ -3,7 +3,6 @@ from app.parsers.courts.core import parse_courts
 from app.parsers.courts.utils import get_court_info
 from app.utils.logger import logger
 from app.schemas.schemas import PersonInitials
-from time import sleep
 
 @celery_app.task(bind=True, name="check_court")
 def check_court_task(self, address: str, fullname_data: dict):
