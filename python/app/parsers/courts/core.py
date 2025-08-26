@@ -1,8 +1,3 @@
-from selenium.webdriver.common.by import By
-from concurrent.futures import ThreadPoolExecutor
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
 from app.services.browser import create_driver
 from app.parsers.courts.blue import parse_court_blue
 from app.parsers.courts.yellow import parse_court_yellow
@@ -21,7 +16,7 @@ def parse_courts(address,fullname,set_status,headless=False):
         if court_type == "blue":
             return parse_court_blue(driver, address,court_info.name, fullname,set_status)
         elif court_type == "yellow":
-            return parse_court_yellow(driver, address,court_info.name, fullname)
+            return parse_court_yellow(driver, address,court_info.name, fullname,set_status)
         else:
             return {f"Сайт {address}": {"__error__": "Сайт не поддерживается"}}
     except Exception as e:

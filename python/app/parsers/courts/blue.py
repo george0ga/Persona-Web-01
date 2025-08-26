@@ -9,8 +9,6 @@ import time
 from app.captcha.ocr_model_blue_integration import predict_captcha_from_bytes
 from app.parsers.courts.utils import check_502,check_503
 from app.utils.logger import logger
-from app.schemas.schemas import PersonInitials 
-
 
 MAX_RETRIES = 15
 RETRY_DELAY = 2.5  
@@ -206,7 +204,7 @@ def make_name_initials(fullname):
     names = []
 
     try:
-        if fullname.name and fullname:
+        if fullname.name and fullname.patronymic:
             # Иванов Иван Иванович
             full = f"{fullname.surname} {fullname.name} {fullname.patronymic}"
             names.append(full)

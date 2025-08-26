@@ -28,9 +28,11 @@
   <!-- 3. Стили для отдельных блоков приложения -->
   <link rel="stylesheet" href="styles/screens/courts/animations/animations.css">
   <link rel="stylesheet" href="styles/screens/courts/animations/hamster_loader.css">
+  <link rel="stylesheet" href="styles/screens/courts/animations/button_loader.css">
   <link rel="stylesheet" href="styles/screens/courts/left_panel/court_status.css">
   <link rel="stylesheet" href="styles/screens/courts/left_panel/status_wave.css">
   <link rel="stylesheet" href="styles/screens/courts/left_panel/status_bad.css">
+  <link rel="stylesheet" href="styles/screens/courts/left_panel/button_loader.css">
   <link rel="stylesheet" href="styles/screens/courts/right_panel/check_screen/base.css">
 
   <!-- Подключение иконок Material Symbols (Rounded и Outlined) -->
@@ -160,8 +162,20 @@
               <input id="patronymic" placeholder="Отчество">
               <div class="input-row">
                 <input id="court_link" placeholder="URL для проверки" style="flex: 1;">
-                <button id="btn-add-court" class="button-loader" onclick="addCourt()">
+                <button id="btn-add-court" class="add-button" onclick="addCourt()">
                   <span class="btn-text">Добавить</span>
+                  <div class="btn-loader hidden">
+                    <div class="dot-spinner">
+                        <div class="dot-spinner__dot"></div>
+                        <div class="dot-spinner__dot"></div>
+                        <div class="dot-spinner__dot"></div>
+                        <div class="dot-spinner__dot"></div>
+                        <div class="dot-spinner__dot"></div>
+                        <div class="dot-spinner__dot"></div>
+                        <div class="dot-spinner__dot"></div>
+                        <div class="dot-spinner__dot"></div>
+                    </div>
+                  </div>
                 </button>
               </div>
               <div id="court_list" class="court-list"></div>

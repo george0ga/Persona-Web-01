@@ -211,12 +211,20 @@
   display: flex;
   gap: 10px;
   align-items: center;
-  width: 100%;           /* не шире родителя */
+  width: 100%;
   box-sizing: border-box;
+  flex-shrink: 0;      /* не сжимается */
+  flex-grow: 0;        /* не растет */
+  height: 40px;        /* фиксированная высота, можно изменить под ваш дизайн */
+  min-height: 40px;    /* минимальная высота */
+  max-height: 40px;    /* максимальная высота */
+  overflow: hidden;    /* скрыть переполнение */
 }
 .input-row input,
 .input-row button {
   min-width: 0;          /* предотвращает переполнение */
+  height: 40px;
+  transition: width 0.25s, height 0.25s, padding 0.25s;
 }
 
 /* Светлая тема для .left-panel-box */

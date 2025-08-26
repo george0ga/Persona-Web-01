@@ -1,6 +1,6 @@
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
-from selenium.webdriver.support.ui import WebDriverWait, Select
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 from base64 import b64decode
@@ -87,8 +87,18 @@ def check_invalid_captcha_input(driver, name, current_subcategory):
 
     try:
         WebDriverWait(driver, 10).until(
-            lambda d: d.find_elements(By.ID, "error") or d.find_elements(By.TAG_NAME, "h3")
+            lambda d: (
+                d.find_elements(By.ID, "error")
+                or d.find_elements(By.TAG_NAME, "h3")
+                or driver.find_elements(By.ID, "content")
+            )
         )
+        
+        content = driver.find_elements(By.ID, "content")
+        if ("НЕВЕРНЫЙ ФОРМАТ ЗАПРОСА" in content.text.upper()):
+            logger.error(f"[check_invalid_captcha_input] Капча решена верно. На странице ошибка с запросом.")
+            return True
+
         error_elements = driver.find_elements(By.ID, "error")
         for el in error_elements:
             if "Неверно указан проверочный код с картинки." in el.text.strip():
@@ -100,13 +110,11 @@ def check_invalid_captcha_input(driver, name, current_subcategory):
             if "Данный запрос некорректен" in el.text:
                 logger.error(f"[check_invalid_captcha_input] Капча введена неверно (по <h3>).")
                 return restart_captcha_input(driver, name, current_subcategory)
-
     except Exception as e:
-        logger.warning(f"[check_invalid_captcha_input] Ошибка при проверке капчи: {e}")
-
+        logger.error(f"[check_invalid_captcha_input] Ошибка при проверке капчи: {e}")
+        return False
     logger.success(f"[check_invalid_captcha_input] Капча решена верно.")
     return True
-
 
 def restart_captcha_input(driver, name, current_subcategory=None):
     try:
@@ -204,7 +212,7 @@ def get_all_cases(driver):
         
         if driver.find_elements(By.ID, "error"):
             logger.warning(f"[get_all_cases] Найдена ошибка на странице, возвращаю заглушку")
-            return "<div class='placeholder'>Дела не найдены</div>"
+            return "<div class='placeholder'>Ошибка при получении таблицы! Рекомендуется проверить категорию вручную.</div>"
 
         logger.info(f"[get_all_cases] Элемент таблицы найден.")
 
@@ -556,7 +564,7 @@ def get_court_type(driver, address):
         logger.exception(f"[get_court_type] Ошибка при определении типа суда: {e}")
         return {f"Сайт {address}": {"__error__": "Ошибка при работе с судом."}}
 
-def regular_type_court_check(driver, address,court_name, names):
+def regular_type_court_check(driver, address,court_name, names,set_status):
     logger.info(f"[regular_type_court_check] Запуск проверки обычного типа суда по адресу: {address}")
     court_results = {}
 
@@ -975,7 +983,7 @@ def modern_find_and_click_search_btn(driver):
         logger.exception(f"[modern_find_and_click_search_btn] Ошибка при нажатии кнопки: {e}")
         return { "ошибка: Не удалось нажать кнопку 'Поиск информации по делам'" : "" }
     
-def modern_type_court_check(driver, address,court_name, names):
+def modern_type_court_check(driver, address,court_name, names,set_status):
     logger.info(f"[modern_type_court_check] Запуск проверки modern-суда по адресу: {address}")
     court_results = {}
 
@@ -1089,7 +1097,7 @@ def modern_type_court_check(driver, address,court_name, names):
 
     return court_results
 
-def multiserver_type_court_check(driver, address, court_name, names):
+def multiserver_type_court_check(driver, address, court_name, names,set_status):
     logger.info(f"[multiserver_type_court_check] Запуск проверки multiserver-суда по адресу: {address}")
     court_results = {}
 
@@ -1238,7 +1246,7 @@ def check_court_availible(driver,address):
     except Exception as e:
         return{f"Сайт {address}": {"__error__": "Ошибка при работе с судом. Информация временно недоступна"}}
 
-def parse_court_yellow(driver, address,fullname):
+def parse_court_yellow(driver, address,court_name,fullname,set_status):
     logger.info(f"[parse_court_yellow] Запуск параллельной проверки судов по адресу {address}.")
     names = make_name_initials(fullname)
     court_type = get_court_type(driver,address)
@@ -1247,17 +1255,17 @@ def parse_court_yellow(driver, address,fullname):
     court_result = {}
     if(court_type == "regular"):
         if(is_court_availible):
-            court_result = regular_type_court_check(driver,address,names)
+            court_result = regular_type_court_check(driver,address,court_name,names,set_status)
             return court_result 
         return{f"Сайт {address}": {"__error__": "Сайт не работает. Информация временно недоступна"}}
     if(court_type == "modern"):
         if(is_court_availible):
-            court_result = modern_type_court_check(driver,address,names)
+            court_result = modern_type_court_check(driver,address,court_name,names,set_status)
             return court_result
         return{f"Сайт {address}": {"__error__": "Сайт не работает. Информация временно недоступна"}}
     if(court_type == "multi"):
         if(is_court_availible):
-            court_result = multiserver_type_court_check(driver,address,names)
+            court_result = multiserver_type_court_check(driver,address,court_name,names,set_status)
             return court_result
         return{f"Сайт {address}": {"__error__": "Сайт не работает. Информация временно недоступна"}}
     if(court_type == "unavailable"):

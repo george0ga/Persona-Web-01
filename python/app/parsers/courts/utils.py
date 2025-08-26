@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from typing import Optional
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import UnexpectedAlertPresentException, NoAlertPresentException
+from selenium.webdriver.common.alert import Alert
 
 from app.services.browser import create_driver
 from app.utils.logger import logger
@@ -18,6 +20,20 @@ class CourtInfo:
     type: Optional[str]
     name: Optional[str]
     error: Optional[str] = None
+
+def check_bad_gateway(driver, retries=3, delay=3):
+    logger.info("[check_bad_gateway] Проверка на Bad Gateway")
+    try:
+        alert = driver.switch_to.alert
+        text = alert.text.strip()
+        if "Bad Gateway" in text:
+            logger.error(f"[check_bad_gateway] Обнаружен алерт: {text}")
+            alert.dismiss()
+            time.sleep(1)
+            driver.refresh()
+            logger.info("[check_bad_gateway] Страница обновлена после Bad Gateway")
+    except:
+        pass
 
 def check_503(driver):
     logger.info(f"[check_503] Проверка на ошибку 503.")
@@ -55,6 +71,7 @@ def check_502(driver):
         logger.error(f"[check_502] Ошибка 502. После {MAX_RETRIES} доступ получить не удалось. ")
 
 def verify_page(driver):
+    check_bad_gateway(driver)
     check_502(driver)
     check_503(driver)
 

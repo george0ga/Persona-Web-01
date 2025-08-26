@@ -28,11 +28,14 @@ async function addCourt() {
     showToast("Этот сайт уже добавлен.");
     return;
   }
+
   input.value = "";
-    checkBtn.disabled = true;
-    addBtn.disabled = true;
-    input.placeholder = "Ожидайте...";
-    input.disabled = true;
+  checkBtn.disabled = true;
+  addBtn.disabled = true;
+  input.placeholder = "Ожидайте...";
+  input.disabled = true;
+  addBtn.querySelector('.btn-text').classList.add('hidden');
+  addBtn.querySelector('.btn-loader').classList.remove('hidden');
   try {
     
 
@@ -79,6 +82,8 @@ async function addCourt() {
         addBtn.disabled = false;
         input.placeholder = "URL для проверки";
         input.disabled = false;
+        addBtn.querySelector('.btn-text').classList.remove('hidden');
+        addBtn.querySelector('.btn-loader').classList.add('hidden');
       } else if (data.status === "pending") {
         checkBtn.disabled = true;
         addBtn.disabled = true;
@@ -141,8 +146,24 @@ function isValidURL(str) {
 }
 
 // ---------------------- Проверка судов ----------------------
-function generateTaskId(courtLink, surname, name, patronymic) {
-  return encodeURIComponent(`${courtLink}::${surname} ${name} ${patronymic}`);
+function normalizeCourtName(name) {
+  return (name || "")
+    .replace(/\s+/g, " ") // убрать лишние пробелы
+    .trim()
+    .toLowerCase();
+}
+
+function findCourtStatusElement(court_name) {
+  if (!court_name) return null;
+  const target = normalizeCourtName(court_name);
+  const items = document.querySelectorAll('.court-check-status-item');
+  for (const item of items) {
+    const nameEl = item.querySelector('.court-check-status-name');
+    if (nameEl && normalizeCourtName(nameEl.textContent) === target) {
+      return item.querySelector('.court-check-status');
+    }
+  }
+  return null;
 }
 
 async function checkCourts() {
@@ -162,7 +183,7 @@ async function checkCourts() {
   const patronymic = patronymic_input.value.trim();
 
   markFieldError("surname", !surname);
-  markFieldError("court_link", !court_link_value);
+  markFieldError("court_link", court_link_value.length === 0);
 
   if (courts.length === 0 || !surname ) {
     showToast("Пожалуйста, заполните необходимые поля.");
@@ -181,7 +202,7 @@ async function checkCourts() {
     item.className = "court-check-status-item";
     item.innerHTML = `
       <span class="court-check-status-name">${court.name || court}</span>
-      <span class="court-check-status">Ожидание...</span>
+      <span class="court-check-status">В очереди...</span>
     `;
     courtStatusList.appendChild(item);
   });
@@ -224,25 +245,48 @@ async function checkCourts() {
       }
 
       if (data.status === "success" && data.result) {
-        // Если результат — массив, берём первый элемент
-        let courtResult = Array.isArray(data.result) ? data.result[0] : data.result;
+        const combinedTree = {};
+        const baseUrls = [];
 
-        // courtResult.result — это дерево суда
+        if (Array.isArray(data.result)) {
+          for (const item of data.result) {
+            if (!item) continue;
+            // учитываем только успешные элементы
+            if (item.status === "success" && item.result && typeof item.result === "object") {
+              deepMerge(combinedTree, item.result);
+              if (item.address) baseUrls.push(String(item.address).replace(/\/$/, ""));
+            }
+            // можно обработать ошибки по адресам, если надо:
+            // else if (item.status === "error") { ... }
+          }
+        } else if (typeof data.result === "object") {
+          // На всякий случай, если сервер вернул не массив, а сразу дерево
+          deepMerge(combinedTree, data.result);
+          if (data.address) baseUrls.push(String(data.address).replace(/\/$/, ""));
+        }
+
         window.lastCourtResult = {
-          html: courtResult.result, // дерево для рендера
-          baseUrl: courtResult.address,
-          url: [courtResult.address]
+          html: combinedTree,         // дерево: Суд → ФИО → Категория → HTML
+          baseUrl: baseUrls[0] || "", // базовый URL для ссылок
+          url: baseUrls               // массив адресов (если пригодится)
         };
-        showCheckingState();
+
         showFinalResult();
         renderCourtResult(window.lastCourtResult);
         eventSource.close();
         checkBtn.disabled = false;
         addBtn.disabled = false;
-        document.getElementById('success_svg').classList.add('show');
-      } else if (data.status === "pending") {
-        // Можно обновлять статус в интерфейсе, если нужно
-      }
+        document.getElementById('success_svg')?.classList.add('show');
+      } else if (data.status === "progress" && Array.isArray(data.subtasks)) {
+          const subtasks = data.subtasks;
+          for (let i = 0; i < subtasks.length; i++) {
+            const subtask = subtasks[i];
+            const court_name = subtask.court_name;
+            const status_text = subtask.status;
+            const el = findCourtStatusElement(court_name);
+            if (el) el.textContent = status_text;
+          }
+        }
     };
 
     eventSource.onerror = (err) => {
@@ -352,6 +396,19 @@ function renderCourtResult(data) {
 
     container.append(courtDiv, courtNested);
   }
+}
+
+function deepMerge(target, source) {
+  for (const key of Object.keys(source)) {
+    const s = source[key];
+    if (s && typeof s === "object" && !Array.isArray(s)) {
+      if (!target[key] || typeof target[key] !== "object") target[key] = {};
+      deepMerge(target[key], s);
+    } else {
+      target[key] = s;
+    }
+  }
+  return target;
 }
 
 // Делает ссылки кликабельными
