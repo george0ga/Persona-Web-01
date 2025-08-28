@@ -38,7 +38,7 @@ services:
       "-A", "app.celery.celery_app.celery_app",
       "worker",
       "--pool=threads",
-      "--concurrency=1",
+      "--concurrency=10",
       "-l", "info"
     ]
     env_file:
