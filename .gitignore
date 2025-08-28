@@ -8,3 +8,6 @@ node_modules
 
 python/logs/
 *.log
+
+excalidraw/
+.vscode/
