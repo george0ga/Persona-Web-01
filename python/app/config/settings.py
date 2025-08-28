@@ -33,7 +33,7 @@ class Settings:
     RATE_LIMIT_API = "5/minute"
     
     # Сервер настройки
-    HOST = "127.0.0.1"
+    HOST = "0.0.0.0"
     PORT = 8000
     DEBUG = os.getenv("DEBUG", "0") == "1"
 
