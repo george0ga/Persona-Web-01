@@ -14,3 +14,4 @@ torch==2.7.1
 torchvision==0.22.1
 uvicorn==0.35.0
 webdriver_manager==4.0.2
+celery>=5.3

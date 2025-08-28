@@ -1,0 +1,7 @@
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "80:80"                 # сайт будет на http://<IP или домен>
+    volumes:
+      - ./public:/usr/share/nginx/html:ro
