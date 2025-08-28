@@ -38,10 +38,10 @@ class Settings:
     DEBUG = os.getenv("DEBUG", "0") == "1"
 
     # Redis настройки
-    REDIS_HOST: str = "localhost"
-    REDIS_PORT: int = 6379
-    REDIS_DB: int = 0
-    REDIS_PASSWORD: str = ""
+    REDIS_HOST: str = os.getenv("REDIS_HOST", "localhost")
+    REDIS_PORT: int = int(os.getenv("REDIS_PORT", "6379"))
+    REDIS_DB: int = int(os.getenv("REDIS_DB", "0"))
+    REDIS_PASSWORD: str = os.getenv("REDIS_PASSWORD", "")
 
     # Celery настройки
     CELERY_BROKER_URL: str = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
