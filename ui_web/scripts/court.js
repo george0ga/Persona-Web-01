@@ -148,7 +148,7 @@ function isValidURL(str) {
 // ---------------------- Проверка судов ----------------------
 function normalizeCourtName(name) {
   return (name || "")
-    .replace(/\s+/g, " ") // убрать лишние пробелы
+    .replace(/\s+/g, " ")
     .trim()
     .toLowerCase();
 }
@@ -208,7 +208,6 @@ async function checkCourts() {
   });
 
   try {
-    // 1. Отправляем запрос на создание задачи
     const response = await fetch(`${API_URL}/courts/check`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -225,7 +224,6 @@ async function checkCourts() {
       return;
     }
     saveTaskId(result.data.task_id);
-    // 2. Ждем результат через SSE
     const eventSource = new EventSource(`${API_URL}/courts/check/stream/${result.data.task_id}`);
     eventSource.onmessage = (event) => {
       let data;
@@ -246,29 +244,29 @@ async function checkCourts() {
 
       if (data.status === "success" && data.result) {
         const combinedTree = {};
-        const baseUrls = [];
+        const urlMap = {};
 
         if (Array.isArray(data.result)) {
           for (const item of data.result) {
             if (!item) continue;
-            // учитываем только успешные элементы
             if (item.status === "success" && item.result && typeof item.result === "object") {
-              deepMerge(combinedTree, item.result);
-              if (item.address) baseUrls.push(String(item.address).replace(/\/$/, ""));
+              Object.keys(item.result).forEach(courtName => {
+                if (!combinedTree[courtName]) combinedTree[courtName] = {};
+                deepMerge(combinedTree[courtName], item.result[courtName]);
+                urlMap[courtName] = String(item.address || "").replace(/\/$/, "");
+              });
             }
-            // можно обработать ошибки по адресам, если надо:
-            // else if (item.status === "error") { ... }
           }
         } else if (typeof data.result === "object") {
-          // На всякий случай, если сервер вернул не массив, а сразу дерево
-          deepMerge(combinedTree, data.result);
-          if (data.address) baseUrls.push(String(data.address).replace(/\/$/, ""));
+            Object.keys(data.result).forEach(courtName => {
+            combinedTree[courtName] = data.result[courtName];
+            urlMap[courtName] = String(data.address || "").replace(/\/$/, "");
+          });
         }
 
         window.lastCourtResult = {
           html: combinedTree,         // дерево: Суд → ФИО → Категория → HTML
-          baseUrl: baseUrls[0] || "", // базовый URL для ссылок
-          url: baseUrls               // массив адресов (если пригодится)
+          urlMap: urlMap                // массив адресов (если пригодится)
         };
 
         showFinalResult();
@@ -327,11 +325,34 @@ function saveCourtUrlsFromResponse(response) {
     }
 }
 
+function removeAllInlineStylesFromElement(root) {
+    if (root.hasAttribute('style')) root.removeAttribute('style');
+    root.querySelectorAll('[style]').forEach(el => el.removeAttribute('style'));
+}
+
+function applyTableStyling(root = document.getElementById("court-result-content")) {
+  // убрать повторяющиеся id у всех таблиц
+  root.querySelectorAll('table[id="tablcont"]').forEach(t => t.removeAttribute('id'));
+
+  // добавить единый класс для стилизации
+  root.querySelectorAll("table").forEach(t => t.classList.add("tablcont"));
+
+  // если нужно — прибить инлайны (не трогаем class/id)
+  root.querySelectorAll("table, table *").forEach(el => {
+    [...el.attributes].forEach(a => {
+      const n = a.name.toLowerCase();
+      if (n === "style" || n.startsWith("on") || ["width","height","border","cellpadding","cellspacing","align","valign","color"].includes(n)) {
+        el.removeAttribute(a.name);
+      }
+    });
+  });
+}
+
 function renderCourtResult(data) {
   const container = document.getElementById("court-result-content");
   container.innerHTML = "";
   const courtTree = data.html;
-  const baseUrls = Array.isArray(data.url) ? data.url : [data.url || data.baseUrl || ""];
+  const urlMap = data.urlMap || {};
 
   function toggle(el) {
     const next = el.nextElementSibling;
@@ -352,6 +373,7 @@ function renderCourtResult(data) {
     const courtDiv = createToggle(court);
     const courtNested = document.createElement("div");
     courtNested.className = "nested";
+    const baseUrlForCourt = urlMap[court] || "";
 
     for (const person in courtTree[court]) {
       if (person === "__error__") {
@@ -375,7 +397,9 @@ function renderCourtResult(data) {
         if (typeof categoryData === "string") {
           const tableDiv = document.createElement("div");
           tableDiv.innerHTML = categoryData;
-          attachCourtLinks(tableDiv, baseUrls[0]);
+          fixLinks(tableDiv, baseUrlForCourt);
+          const table = tableDiv.querySelector("table");
+          if (table) table.classList.add("tablcont");
           catNested.appendChild(tableDiv);
         } else if (typeof categoryData === "object") {
           for (const subcategory in categoryData) {
@@ -383,7 +407,7 @@ function renderCourtResult(data) {
             const subNested = document.createElement("div");
             subNested.className = "nested";
             subNested.innerHTML = categoryData[subcategory];
-            attachCourtLinks(subNested, baseUrls[0]);
+            fixLinks(subNested, baseUrlForCourt);
             catNested.append(subDiv, subNested);
           }
         }
@@ -396,6 +420,7 @@ function renderCourtResult(data) {
 
     container.append(courtDiv, courtNested);
   }
+  applyTableStyling();
 }
 
 function deepMerge(target, source) {
@@ -411,25 +436,26 @@ function deepMerge(target, source) {
   return target;
 }
 
-// Делает ссылки кликабельными
-function attachCourtLinks(root) {
-    const links = root.querySelectorAll("a[href]");
-    links.forEach(link => {
-        const href = link.getAttribute("href");
-        const courtIndex = link.dataset.courtIndex; // Берём индекс суда из атрибута
-
-        link.style.color = "#4da6ff";
-        link.style.textDecoration = "underline";
-        link.target = "_blank";
-
-        link.addEventListener("click", (e) => {
-            e.preventDefault();
-            const baseUrl = courtUrls[courtIndex] || "";
-            const fullUrl = href.startsWith("http") ? href : baseUrl + href;
-            window.open(fullUrl, "_blank");
-        });
-    });
+function fixLinks(root, baseUrl) {
+  if (!baseUrl) return;
+  root.querySelectorAll("a[href]").forEach(a => {
+    const href = a.getAttribute("href") || "";
+    try {
+      a.href = new URL(href, baseUrl).href;     // корректно склеивает любые относительные/корневые пути
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.removeAttribute("style");               // чтобы css не перебивались инлайнами
+    } catch { /* игнор */ }
+  });
 }
+
+// ------- Проверка наличия активной задачи проверки судов ----------------------
+document.addEventListener("DOMContentLoaded", function() {
+    const savedTaskId = getSavedTaskId();
+    if (savedTaskId) {
+        getCourtStatusById(savedTaskId);
+    }
+});
 
 // ---------------------- Управление состояниями экрана ----------------------
 function showInitialPlaceholder() {

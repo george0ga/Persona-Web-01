@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.build/
+.dist/
+.venv/
+venv/
+env/
+
+# IDE/OS
+.vscode/
+.idea/
+.DS_Store
+
+# Логи и артефакты
+logs/*
+python/app/logs/*
+*.log
+*.zip
+
+# Ненужное для образа локально
+ui_web/node_modules/

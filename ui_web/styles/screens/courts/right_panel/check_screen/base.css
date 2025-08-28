@@ -54,3 +54,33 @@ body.light-theme .court-check-status {
     font-weight: bold;
     font-size: 14px;
 }
+
+.court-check-status.status-queue {
+    color: orange;
+}
+.court-check-status.status-progress {
+    color: #42a5f5; /* синий */
+}
+.court-check-status.status-success {
+    color: #43a047; /* зелёный */
+}
+.court-check-status.status-error {
+    color: #e53935; /* красный */
+}
+
+
+
+body.light-theme .court-check-status.status-queue {
+    color: orange;
+}
+
+.court-check-status.status-progress {
+    color: #42a5f5; /* синий */
+}
+
+body.light-theme .court-check-status.status-success {
+    color: #43a047;
+}
+body.light-theme .court-check-status.status-error {
+    color: #e53935;
+}

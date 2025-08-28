@@ -6,13 +6,14 @@ from bs4 import BeautifulSoup
 from base64 import b64decode
 import time
 from app.utils.logger import logger
-from app.parsers.courts.utils import verify_page
+from app.parsers.courts.utils import verify_page, make_name_initials, clean_table, timing_decorator
 from app.captcha.orc_model_yellow_integration import predict_captcha_from_bytes
 
 MAX_RETRIES = 15
 RETRY_DELAY = 5  
 FIRST_TIME = True
 
+@timing_decorator
 def solve_captcha(driver):
     logger.info(f"[solve_captcha] Начата попытка распознания капчи.")
     logger.info(f"[solve_captcha] Поиск элемента с капчей.")
@@ -36,13 +37,16 @@ def solve_captcha(driver):
     logger.info(f"[solve_captcha] Попытка решения капчи")
     return predict_captcha_from_bytes(image_bytes)
 
+@timing_decorator
 def extract_table_html(driver):
-    logger.info(f"[extract_table_html] Получение таблицы дел.")
+    logger.info("[extract_table_html] Получение таблицы дел.")
     soup = BeautifulSoup(driver.page_source, "html.parser")
     table = soup.find("table", id="tablcont")
-    logger.info(f"[extract_table_html] Таблица получена.")
+    table = clean_table(table)
+    logger.info("[extract_table_html] Таблица получена.")
     return str(table) if table else "<div class='placeholder'>Нет данных</div>"
 
+@timing_decorator
 def merge_html_tables(html_list):
     logger.info(f"[merge_html_tables] Начато объединение таблиц.")
     if not html_list:
@@ -71,8 +75,7 @@ def merge_html_tables(html_list):
 
     return str(base_table)
 
-
-
+@timing_decorator
 def check_captcha(driver):
     logger.info(f"[check_captcha] Проверка сайта на требования к капче.")
     capthca_page = driver.find_elements(By.ID,"captcha")
@@ -82,6 +85,7 @@ def check_captcha(driver):
     logger.success(f"[check_captcha] Сайт не требует капчу.")
     return False
 
+@timing_decorator
 def check_invalid_captcha_input(driver, name, current_subcategory):
     logger.info(f"[check_invalid_captcha_input] Проверка ошибки после ввода капчи.")
 
@@ -116,6 +120,7 @@ def check_invalid_captcha_input(driver, name, current_subcategory):
     logger.success(f"[check_invalid_captcha_input] Капча решена верно.")
     return True
 
+@timing_decorator
 def restart_captcha_input(driver, name, current_subcategory=None):
     try:
         driver.back()
@@ -136,6 +141,7 @@ def restart_captcha_input(driver, name, current_subcategory=None):
         logger.error(f"[restart_captcha_input] Ошибка при повторном вводе капчи: {e}")
         return False
 
+@timing_decorator
 def input_captcha_and_press_submit(driver,name,current_subcategory):
     logger.info(f"[input_captcha_and_press_submit] Начинаю отправку капчи.")
     tries = 0
@@ -162,6 +168,7 @@ def input_captcha_and_press_submit(driver,name,current_subcategory):
     logger.error(f"[input_captcha_and_press_submit] Ошибка ввода капчи — превышено число попыток")
     return False
 
+@timing_decorator
 def select_category_and_subcategory(driver, category_name, subcategory_name):
     logger.info(f"[select_category_and_subcategory] Попытка заново выбрать: {category_name} → {subcategory_name}")
     try:
@@ -189,7 +196,7 @@ def select_category_and_subcategory(driver, category_name, subcategory_name):
         logger.exception(f"[select_category_and_subcategory] Ошибка при повторном выборе: {e}")
         return False
 
-
+@timing_decorator
 def check_and_get_next_page(driver):
     verify_page(driver)
     logger.info(f"[check_and_get_next_page] Проверка наличия кнопки 'Следующая страница")
@@ -203,6 +210,7 @@ def check_and_get_next_page(driver):
         logger.error(f"[check_and_get_next_page] Кнопка 'Следующая страница' не найдена, возвращаю 'end'")
         return "end"
 
+@timing_decorator
 def get_all_cases(driver):
     logger.info(f"[get_all_cases] Ожидаю появления таблицы или ошибки")
     try:
@@ -212,7 +220,7 @@ def get_all_cases(driver):
         
         if driver.find_elements(By.ID, "error"):
             logger.warning(f"[get_all_cases] Найдена ошибка на странице, возвращаю заглушку")
-            return "<div class='placeholder'>Ошибка при получении таблицы! Рекомендуется проверить категорию вручную.</div>"
+            return "<div class='placeholder'>Дела не найдены</div>"
 
         logger.info(f"[get_all_cases] Элемент таблицы найден.")
 
@@ -241,6 +249,7 @@ def get_all_cases(driver):
     logger.success(f"[get_all_cases] Все страницы собраны, объединяю таблицы")
     return merge_html_tables(all_pages)
 
+@timing_decorator
 def find_and_click_change_btn(driver):
     logger.info(f"[find_and_click_change_btn] Поиск и клик по кнопке 'Изменить'")
     try:
@@ -254,9 +263,10 @@ def find_and_click_change_btn(driver):
     except Exception as e:
         logger.error(f"[find_and_click_change_btn] Ошибка при поиске и нажатии кнопки 'Изменить'")
 
+@timing_decorator
 def find_and_send_surname_input(driver,name):
     logger.info(f"[find_and_send_surname_input] Начало попытки ввода фамилии: {name}")
-    time.sleep(1)
+    #time.sleep(1)
     global FIRST_TIME
     try:
         if FIRST_TIME:
@@ -289,6 +299,7 @@ def find_and_send_surname_input(driver,name):
     except Exception as e:
         logger.exception(f"[find_and_send_surname_input] Ошибка при вводе фамилии: {e}")
 
+@timing_decorator
 def find_and_click_back_btn(driver):
     logger.info(f"[find_and_click_back_btn] Попытка найти и нажать кнопку 'Поиск информации по делам'")
     try:
@@ -307,6 +318,7 @@ def find_and_click_back_btn(driver):
         logger.exception(f"[find_and_click_back_btn] Исключение: {e}")
         raise RuntimeError("[find_and_click_back_btn] Кнопка 'Поиск информации по делам' не найдена")
 
+@timing_decorator
 def find_and_send_captcha(driver):
     logger.info(f"[find_and_send_captcha] Запуск решения и ввода капчи")
 
@@ -345,16 +357,15 @@ def find_and_send_captcha(driver):
             logger.error(f"[find_and_send_captcha] Повторный ввод капчи не удался: {e2}")
             raise
 
+@timing_decorator
 def get_category_and_subcategory_btns(driver):
     logger.info(f"[get_category_and_subcategory_btns] Начало парсинга категорий")
 
     try:
         logger.info(f"[get_category_and_subcategory_btns] Ожидание загрузки строк таблицы и подкатегорий")
         WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "table > tbody > tr"))
-        )
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "div[onclick*='select_delo_id_new']"))
+            lambda d: EC.presence_of_element_located((By.CSS_SELECTOR, "table > tbody > tr"))(d)
+                    or EC.presence_of_element_located((By.CSS_SELECTOR, "div[onclick*='select_delo_id_new']"))(d)
         )
     except TimeoutException:
         logger.error(f"[get_category_and_subcategory_btns] Категории не загрузились — таймаут")
@@ -401,8 +412,9 @@ def get_category_and_subcategory_btns(driver):
 
     return results
 
+@timing_decorator
 def get_category_and_subcategory_btns_new(driver):
-    logger.info("[get_category_and_subcategory_buttons] Парсинг категорий и подкатегорий")
+    logger.info("[get_category_and_subcategory_buttons_new] Парсинг категорий и подкатегорий")
 
     try:
         WebDriverWait(driver, 30).until(
@@ -415,11 +427,11 @@ def get_category_and_subcategory_btns_new(driver):
             EC.presence_of_element_located((By.CSS_SELECTOR, "div[onclick*='select_delo_id_new']"))
         )
     except:
-        logger.error("[get_category_and_subcategory_buttons] Элемент #content не найден")
+        logger.error("[get_category_and_subcategory_buttons_new] Элемент #content не найден")
     try:
         container = driver.find_element(By.ID, "content")
     except Exception as e:
-        logger.error("[get_category_and_subcategory_buttons] Элемент #content не найден")
+        logger.error("[get_category_and_subcategory_buttons_new] Элемент #content не найден")
         return {}
 
     result = {}
@@ -435,7 +447,7 @@ def get_category_and_subcategory_btns_new(driver):
                 current_category = strongs[0].text.strip()
                 if(current_category != "Отмена"):
                     result[current_category] = []
-                    logger.debug(f"[get_category_and_subcategory_buttons] Найдена категория: {current_category}")
+                    logger.debug(f"[get_category_and_subcategory_buttons_new] Найдена категория: {current_category}")
                 continue
 
             # Подкатегория — отступ + onclick
@@ -448,14 +460,15 @@ def get_category_and_subcategory_btns_new(driver):
                         "name": sub_name,
                         "element": div
                     })
-                    logger.debug(f"[get_category_and_subcategory_buttons] Подкатегория '{sub_name}' добавлена в '{current_category}'")
+                    logger.debug(f"[get_category_and_subcategory_buttons_new] Подкатегория '{sub_name}' добавлена в '{current_category}'")
 
         except Exception as e:
-            logger.warning(f"[get_category_and_subcategory_buttons] Ошибка при обработке div: {e}")
+            logger.warning(f"[get_category_and_subcategory_buttons_new] Ошибка при обработке div: {e}")
 
-    logger.success(f"[get_category_and_subcategory_buttons] Готово. Категорий: {len(result)}")
+    logger.success(f"[get_category_and_subcategory_buttons_new] Готово. Категорий: {len(result)}")
     return result
 
+@timing_decorator
 def find_and_click_search_btn(driver):
     logger.info(f"[find_and_click_search_btn] Попытка найти и нажать кнопку 'Поиск информации по делам'")
 
@@ -478,44 +491,7 @@ def find_and_click_search_btn(driver):
         logger.exception(f"[find_and_click_search_btn] Ошибка при нажатии кнопки: {e}")
         return { "ошибка: Не удалось нажать кнопку 'Поиск информации по делам'" : "" }
 
-def make_name_initials(fullname):
-    logger.info(f"[make_name_initials] Формирование вариантов ФИО из: {fullname.surname} {fullname.name} {fullname.patronymic}")
-    names = []
-
-    try:
-        if fullname.name and fullname.patronymic:
-            # Иванов Иван Иванович
-            full = f"{fullname.surname} {fullname.name} {fullname.patronymic}"
-            names.append(full)
-            logger.debug(f"[make_name_initials] Добавлен полный формат: {full}")
-
-            # Иванов И. И.
-            initials = f"{fullname.surname} {fullname.name[0]}. {fullname.patronymic[0]}. "
-            names.append(initials)
-            logger.debug(f"[make_name_initials] Добавлены инициалы: {initials}")
-        else:
-            if fullname.name:
-                # Иванов И.
-                initials = f"{fullname.surname} {fullname.name[0]}. "
-                names.append(initials)
-                logger.debug(f"[make_name_initials] Добавлен вариант с первой буквой имени: {initials}")
-
-                # Иванов Иван
-                full = f"{fullname.surname} {fullname.name}"
-                names.append(full)
-                logger.debug(f"[make_name_initials] Добавлен вариант с именем без отчества: {full}")
-
-            # Иванов
-            names.append(fullname.surname)
-            logger.debug(f"[make_name_initials] Добавлена только фамилия: {fullname.surname}")
-
-        logger.success(f"[make_name_initials] Всего сформировано вариантов: {len(names)}")
-        return names
-
-    except Exception as e:
-        logger.exception(f"[make_name_initials] Ошибка при формировании ФИО: {e}")
-        return [fullname.surname]
-
+@timing_decorator
 def get_court_type(driver, address):
     logger.info(f"[get_court_type] Определение типа суда по адресу: {address}")
 
@@ -564,6 +540,7 @@ def get_court_type(driver, address):
         logger.exception(f"[get_court_type] Ошибка при определении типа суда: {e}")
         return {f"Сайт {address}": {"__error__": "Ошибка при работе с судом."}}
 
+@timing_decorator
 def regular_type_court_check(driver, address,court_name, names,set_status):
     logger.info(f"[regular_type_court_check] Запуск проверки обычного типа суда по адресу: {address}")
     court_results = {}
@@ -605,7 +582,7 @@ def regular_type_court_check(driver, address,court_name, names,set_status):
                     continue
 
                 logger.info(f"[regular_type_court_check] Обработка категории: {category_name}")
-
+                
                 for subcategory in subcategories:
                     logger.info(f"[regular_type_court_check] Попытка нажать подкатегорию: {subcategory['name']}")
                     current_subcategory = {
@@ -620,10 +597,17 @@ def regular_type_court_check(driver, address,court_name, names,set_status):
                     if refreshed_element is None:
                         logger.warning(f"[regular_type_court_check] Не удалось найти элемент подкатегории '{subcategory['name']}'")
                         continue
-
+                    try:       
+                        WebDriverWait(driver, 1).until(EC.invisibility_of_element_located((By.ID, "divFSPopupBottom")))
+                    except TimeoutException:
+                        logger.info(f"[regular_type_court_check] Таблица выбора категории не пропала")
+                        driver.execute_script("""
+                            const el = document.getElementById('divFSPopupBottom');
+                            if (el) { el.style.display='none'; el.style.pointerEvents='none'; }
+                        """)
                     refreshed_element.click()
                     logger.info(f"[regular_type_court_check] Подкатегория '{subcategory['name']}' нажата")
-
+                    set_status(f"Проверка категории {category_name}, подкатегория {subcategory['name']} : {name_to_check}", court_name)
                     verify_page(driver)
                     try:
                         WebDriverWait(driver, 40).until(
@@ -658,6 +642,7 @@ def regular_type_court_check(driver, address,court_name, names,set_status):
                         try:
                             submit_button = driver.find_element(By.NAME, "Submit")
                             submit_button.click()
+                            verify_page(driver)
                             logger.info(f"[regular_type_court_check] Нажата кнопка 'Submit'")
                         except Exception as e:
                             logger.warning(f"[regular_type_court_check] Ошибка при нажатии 'Submit': {e}")
@@ -673,19 +658,22 @@ def regular_type_court_check(driver, address,court_name, names,set_status):
                     logger.info(f"[regular_type_court_check] Выполнен возврат назад")
                     verify_page(driver)
                     find_and_click_change_btn(driver)
+                    verify_page(driver)
                     logger.info(f"[regular_type_court_check] Нажата кнопка 'Изменить'")
                 # Добавляем в список посещённых категорий
                 visited_categories.add(category_name)
             logger.info("=== Конец итерации по имени ===")
+            set_status(f"Проверка по ФИО: {name_to_check} завершена", court_name)
     except Exception as e:
         logger.exception(f"[regular_type_court_check] Ошибка при проверке: {e}")
         raise
 
     return court_results
 
+@timing_decorator
 def moder_find_and_send_surname_input(driver, name):
     logger.info(f"[moder_find_and_send_surname_input] Попытка ввода фамилии (modern): {name}")
-    time.sleep(1)
+    #time.sleep(1)
 
     try:
         logger.info(f"[moder_find_and_send_surname_input] Поиск поля по ID: 'parts__namess'")
@@ -736,6 +724,7 @@ def modern_solve_captcha(driver):
         logger.exception(f"[modern_solve_captcha] Ошибка при распознавании капчи: {e}")
         raise
 
+@timing_decorator
 def modern_find_and_send_captcha(driver):
     logger.info(f"[modern_find_and_send_captcha] Запуск процедуры распознавания и ввода капчи")
 
@@ -775,6 +764,7 @@ def modern_find_and_send_captcha(driver):
             logger.exception(f"[modern_find_and_send_captcha] Повторный ввод капчи не удался: {e2}")
             raise
 
+@timing_decorator
 def modern_check_invalid_captcha_input(driver, name):
     logger.info(f"[modern_check_invalid_captcha_input] Проверка результата ввода капчи")
 
@@ -792,7 +782,7 @@ def modern_check_invalid_captcha_input(driver, name):
             )
             moder_find_and_send_surname_input(driver, name)
             capcha_input.clear()
-            time.sleep(1)
+            #time.sleep(1)
             return False
 
         # Проверка по тексту h3
@@ -808,7 +798,7 @@ def modern_check_invalid_captcha_input(driver, name):
             )
             moder_find_and_send_surname_input(driver, name)
             capcha_input.clear()
-            time.sleep(1)
+            #time.sleep(1)
             return False
 
     except Exception as e:
@@ -817,6 +807,7 @@ def modern_check_invalid_captcha_input(driver, name):
     logger.info(f"[modern_check_invalid_captcha_input] Ошибок не обнаружено — капча прошла успешно")
     return True
 
+@timing_decorator
 def modern_input_captcha_and_press_submit(driver, name):
     logger.info(f"[modern_input_captcha_and_press_submit] Начало попыток ввода капчи (максимум {MAX_RETRIES})")
     tries = 0
@@ -837,6 +828,7 @@ def modern_input_captcha_and_press_submit(driver, name):
                 EC.element_to_be_clickable((By.ID, "searchBtn"))
             )
             submit_button.click()
+            verify_page(driver)
             logger.info(f"[modern_input_captcha_and_press_submit] Нажата кнопка 'searchBtn'")
         except Exception as e:
             logger.warning(f"[modern_input_captcha_and_press_submit] Не удалось нажать 'searchBtn': {e}")
@@ -857,6 +849,7 @@ def modern_input_captcha_and_press_submit(driver, name):
     logger.error(f"[modern_input_captcha_and_press_submit] Превышено количество попыток ({MAX_RETRIES}) — капча не пройдена")
     return False
 
+@timing_decorator
 def modern_extract_table_html(driver):
     logger.info(f"[modern_extract_table_html] Попытка извлечь таблицу с результатами")
 
@@ -884,6 +877,7 @@ def modern_extract_table_html(driver):
         logger.exception(f"[modern_extract_table_html] Ошибка при извлечении таблицы: {e}")
         return "<div class='placeholder'>Ошибка при получении таблицы</div>"
 
+@timing_decorator
 def modern_check_and_get_next_page(driver):
     logger.info(f"[modern_check_and_get_next_page] Проверка наличия кнопки 'Следующая страница'")
 
@@ -898,6 +892,7 @@ def modern_check_and_get_next_page(driver):
             EC.element_to_be_clickable((By.LINK_TEXT, "»"))
         )
         next_page_btn.click()
+        verify_page(driver)
         logger.info(f"[modern_check_and_get_next_page] Кнопка 'Следующая страница' нажата")
 
         return modern_extract_table_html(driver)
@@ -910,6 +905,7 @@ def modern_check_and_get_next_page(driver):
         logger.exception(f"[modern_check_and_get_next_page] Ошибка при переходе на следующую страницу: {e}")
         return "end"
 
+@timing_decorator
 def modern_get_all_cases(driver):
     logger.info(f"[modern_get_all_cases] Запуск парсинга результатов (modern)")
 
@@ -963,6 +959,7 @@ def modern_get_all_cases(driver):
     logger.success(f"[modern_get_all_cases] Все страницы собраны. Объединение таблиц")
     return merge_html_tables(all_pages)
 
+@timing_decorator
 def modern_find_and_click_search_btn(driver):
     logger.info(f"[modern_find_and_click_search_btn] Поиск и клик по кнопке 'Поиск информации по делам' (modern)")
 
@@ -978,11 +975,13 @@ def modern_find_and_click_search_btn(driver):
     try:
         logger.info(f"[modern_find_and_click_search_btn] Кнопка найдена. Выполняется клик...")
         search_button.click()
+        verify_page(driver)
         logger.success(f"[modern_find_and_click_search_btn] Кнопка 'Поиск информации по делам' успешно нажата")
     except Exception as e:
         logger.exception(f"[modern_find_and_click_search_btn] Ошибка при нажатии кнопки: {e}")
         return { "ошибка: Не удалось нажать кнопку 'Поиск информации по делам'" : "" }
-    
+
+@timing_decorator    
 def modern_type_court_check(driver, address,court_name, names,set_status):
     logger.info(f"[modern_type_court_check] Запуск проверки modern-суда по адресу: {address}")
     court_results = {}
@@ -1070,6 +1069,7 @@ def modern_type_court_check(driver, address,court_name, names,set_status):
                                     EC.element_to_be_clickable((By.NAME, "Submit"))
                                 )
                                 submit_button.click()
+                                verify_page(driver)
                                 logger.info(f"[modern_type_court_check] Нажата кнопка 'Submit'")
                             except Exception as e:
                                 logger.warning(f"[modern_type_court_check] Ошибка при нажатии 'Submit': {e}")
@@ -1097,6 +1097,7 @@ def modern_type_court_check(driver, address,court_name, names,set_status):
 
     return court_results
 
+@timing_decorator
 def multiserver_type_court_check(driver, address, court_name, names,set_status):
     logger.info(f"[multiserver_type_court_check] Запуск проверки multiserver-суда по адресу: {address}")
     court_results = {}
@@ -1120,7 +1121,7 @@ def multiserver_type_court_check(driver, address, court_name, names,set_status):
             for li in li_elements:
                 server_link = li.find_element(By.TAG_NAME, "a")
                 server_link.click()
-
+                verify_page(driver)
                 court_results.setdefault(court_name, {})[name_to_check] = {}
 
                 sud_delo_button.click()
@@ -1151,7 +1152,9 @@ def multiserver_type_court_check(driver, address, court_name, names,set_status):
                             logger.warning(f"[multiserver_type_court_check] Не найдена подкатегория: {subcategory['name']}")
                             continue
 
+                        WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.ID, "divFSPopupBottom")))
                         refreshed_element.click()
+                        verify_page(driver)
                         logger.info(f"[multiserver_type_court_check] Клик по подкатегории '{subcategory['name']}' выполнен")
 
                         verify_page(driver)
@@ -1186,6 +1189,7 @@ def multiserver_type_court_check(driver, address, court_name, names,set_status):
                             try:
                                 submit_button = driver.find_element(By.NAME, "Submit")
                                 submit_button.click()
+                                verify_page(driver)
                                 logger.info("[multiserver_type_court_check] Нажата кнопка 'Submit'")
                             except Exception as e:
                                 logger.warning(f"[multiserver_type_court_check] Ошибка при нажатии Submit: {e}")
@@ -1203,7 +1207,7 @@ def multiserver_type_court_check(driver, address, court_name, names,set_status):
                         verify_page(driver)
                         find_and_click_change_btn(driver)
                         logger.info("[multiserver_type_court_check] Нажата кнопка 'Изменить'")
-
+                        verify_page(driver)
                 logger.info("=== Конец итерации по имени ===")
 
     except Exception as e:
@@ -1212,6 +1216,7 @@ def multiserver_type_court_check(driver, address, court_name, names,set_status):
 
     return court_results
 
+@timing_decorator
 def check_court_availible(driver,address):
     driver.get(address)
     logger.info(f"[check_court_availible] Страница загружена")
@@ -1235,6 +1240,7 @@ def check_court_availible(driver,address):
     driver.execute_script("arguments[0].scrollIntoView(true);", sud_delo_button)
     time.sleep(0.3)
     sud_delo_button.click()
+    verify_page(driver)
     try:
         element = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".box.box_common.m-all_m")))
         if "Информация временно недоступна" in element.text:
@@ -1246,12 +1252,14 @@ def check_court_availible(driver,address):
     except Exception as e:
         return{f"Сайт {address}": {"__error__": "Ошибка при работе с судом. Информация временно недоступна"}}
 
+@timing_decorator
 def parse_court_yellow(driver, address,court_name,fullname,set_status):
     logger.info(f"[parse_court_yellow] Запуск параллельной проверки судов по адресу {address}.")
     names = make_name_initials(fullname)
     court_type = get_court_type(driver,address)
     is_court_availible = check_court_availible(driver,address)
     logger.info(f"[parse_court_yellow] Тип суда {court_type}.")
+    set_status(f"Начало проверки", court_name)
     court_result = {}
     if(court_type == "regular"):
         if(is_court_availible):

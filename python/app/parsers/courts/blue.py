@@ -7,7 +7,7 @@ from urllib.parse import urlparse, parse_qsl, urlencode, urlunparse
 import time
 
 from app.captcha.ocr_model_blue_integration import predict_captcha_from_bytes
-from app.parsers.courts.utils import check_502,check_503
+from app.parsers.courts.utils import check_502,check_503, make_name_initials
 from app.utils.logger import logger
 
 MAX_RETRIES = 15
@@ -198,44 +198,6 @@ def parse_category(driver,name_to_check,category):
     verify_page(driver)
     pages_count = extract_total_pages(driver.page_source)
     return get_all_cases(driver,pages_count)
-
-def make_name_initials(fullname):
-    logger.info(f"[make_name_initials] Формирование вариантов ФИО из: {fullname.surname} {fullname.name} {fullname.patronymic}")
-    names = []
-
-    try:
-        if fullname.name and fullname.patronymic:
-            # Иванов Иван Иванович
-            full = f"{fullname.surname} {fullname.name} {fullname.patronymic}"
-            names.append(full)
-            logger.debug(f"[make_name_initials] Добавлен полный формат: {full}")
-
-            # Иванов И. И.
-            initials = f"{fullname.surname} {fullname.name[0]}. {fullname.patronymic[0]}. "
-            names.append(initials)
-            logger.debug(f"[make_name_initials] Добавлены инициалы: {initials}")
-        else:
-            if fullname.name:
-                # Иванов И
-                initials = f"{fullname.surname} {fullname.name[0]} "
-                names.append(initials)
-                logger.debug(f"[make_name_initials] Добавлен вариант с первой буквой имени: {initials}")
-
-                # Иванов Иван
-                full = f"{fullname.surname} {fullname.name}"
-                names.append(full)
-                logger.debug(f"[make_name_initials] Добавлен вариант с именем без отчества: {full}")
-
-            # Иванов
-            names.append(fullname.surname)
-            logger.debug(f"[make_name_initials] Добавлена только фамилия: {fullname.surname}")
-
-        logger.success(f"[make_name_initials] Всего сформировано вариантов: {len(names)}")
-        return names
-
-    except Exception as e:
-        logger.exception(f"[make_name_initials] Ошибка при формировании ФИО: {e}")
-        return [fullname.surname]
 
 def parse_court_blue(driver, address,court_name,fullname,set_status):
     court_results = {}

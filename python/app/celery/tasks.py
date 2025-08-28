@@ -22,7 +22,6 @@ def check_court_task(self, address: str, fullname_data: dict):
     except Exception as e:
         return {"address": address, "error": str(e), "status": "error"}
 
-
 @celery_app.task(bind=True, name="verify_court")
 def verify_court_task(self, address: str):
     """
