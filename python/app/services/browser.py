@@ -4,7 +4,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from fake_useragent import UserAgent
 from loguru import logger
 
-def create_driver(page_load_strategy="normal",headless = False):
+def create_driver(page_load_strategy="normal",headless = True):
     user_agent = UserAgent()
     options = webdriver.ChromeOptions()
     options.page_load_strategy = page_load_strategy

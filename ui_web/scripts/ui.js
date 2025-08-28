@@ -23,10 +23,3 @@ function showToast(message, duration = 3000) {
     toast.classList.remove('show');
   }, duration);
 }
-// ------- Проверка наличия активной задачи проверки судов ----------------------
-document.addEventListener("DOMContentLoaded", function() {
-    const savedTaskId = getSavedTaskId();
-    if (savedTaskId) {
-        getCourtStatusById(savedTaskId);
-    }
-});

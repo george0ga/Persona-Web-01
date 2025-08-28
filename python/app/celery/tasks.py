@@ -17,7 +17,7 @@ def check_court_task(self, address: str, fullname_data: dict):
 
     try:
         fullname = PersonInitials(**fullname_data)
-        result = parse_courts(address, fullname, set_status, headless=False)
+        result = parse_courts(address, fullname, set_status, headless=True)
         return {"address": address, "result": result, "status": "success"}
     except Exception as e:
         return {"address": address, "error": str(e), "status": "error"}

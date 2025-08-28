@@ -268,7 +268,7 @@ def get_court_info(address,driver):
     need_to_close = False
     if driver is None:
         need_to_close = True
-        driver = create_driver("eager", headless=False)
+        driver = create_driver("eager", headless=True)
     try:
         try:
             driver.get(address)

@@ -5,7 +5,7 @@ from app.parsers.courts.utils import get_court_info
 from app.utils.logger import logger
 from app.schemas.schemas import PersonInitials 
 
-def parse_courts(address,fullname,set_status,headless=False):
+def parse_courts(address,fullname,set_status,headless=True):
     if isinstance(fullname, dict):
         fullname = PersonInitials(**fullname)
     driver = create_driver("eager", headless)

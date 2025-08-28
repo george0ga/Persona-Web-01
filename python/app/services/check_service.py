@@ -4,7 +4,7 @@ from app.utils.logger import logger
 from app.parsers.courts.core import parse_courts
 
 class CheckService():
-    def __init__(self, headless=False):
+    def __init__(self, headless=True):
         self.headless_mode = headless
     
     def check_courts(self, addresses, fullname_data):
@@ -34,7 +34,7 @@ class CheckService():
         try:
             results = {}
             for address in addresses:
-                court_result = parse_courts(address, fullname_data, headless=False)
+                court_result = parse_courts(address, fullname_data, headless=True)
                 results[address] = court_result
             logger.info(f"[Celery] Batch-задача проверки адресов завершена")
             return {
