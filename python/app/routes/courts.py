@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api/v1", tags=["courts"])
     
 @router.post("/courts/no-queue", response_model=CourtResponseModel)
 @limiter.limit(settings.RATE_LIMIT_API)
-#@track_http_metrics()
+@track_http_metrics()
 async def check_courts_no_queue(data: CourtCheckModel, request: Request):
     """
     Пакетная проверка списка адресов судов без использования очереди
@@ -40,7 +40,7 @@ async def check_courts_no_queue(data: CourtCheckModel, request: Request):
     
 @router.post("/courts/check", response_model=CourtResponseModel)
 @limiter.limit(settings.RATE_LIMIT_API)
-#@track_http_metrics()
+@track_http_metrics()
 async def check_courts(data: CourtCheckModel, request: Request):
     """
     Проверка судов.
@@ -67,7 +67,7 @@ async def check_courts(data: CourtCheckModel, request: Request):
 
 @router.post("/courts/verify", response_model=CourtResponseModel)
 @limiter.limit(settings.RATE_LIMIT_API) 
-#@track_http_metrics()
+@track_http_metrics()
 async def verify_court(data: CourtVerifyModel, request: Request):
     """
     Проверка и получение названия суда по адресу

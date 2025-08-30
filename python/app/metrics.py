@@ -1,5 +1,6 @@
 # metrics.py
 """Система метрик Prometheus для создания графиков и мониторинга"""
+import asyncio
 from prometheus_client import Counter, Histogram, Gauge, Summary, generate_latest, CONTENT_TYPE_LATEST
 from fastapi import Request, Response
 import time
@@ -78,13 +79,6 @@ APPLICATION_UPTIME_SECONDS = Gauge(
     'Application uptime in seconds'
 )
 
-# 11. RATE LIMITING (график ограничений)
-RATE_LIMIT_EXCEEDED_TOTAL = Counter(
-    'rate_limit_exceeded_total',
-    'Total number of rate limit violations',
-    ['endpoint', 'client_ip']
-)
-
 # 12. ОШИБКИ (график ошибок по типам)
 ERRORS_TOTAL = Counter(
     'errors_total',
@@ -114,18 +108,23 @@ def track_http_metrics():
         async def wrapper(*args, **kwargs):
             logger.info(f"🔍 Декоратор track_http_metrics вызван для функции {func.__name__}")
             
-            # Получаем request из аргументов
-            request = None
-            for arg in args:
-                if isinstance(arg, Request):
-                    request = arg
-                    break
-            
-            if not request:
-                logger.warning(f"❌ Request не найден в аргументах для {func.__name__}")
+            request: Request | None = None
+
+            # FastAPI обычно кладёт request в kwargs
+            if "request" in kwargs and isinstance(kwargs["request"], Request):
+                request = kwargs["request"]
+            else:
+                # fallback: ищем среди args
+                for arg in args:
+                    if isinstance(arg, Request):
+                        request = arg
+                        break
+
+            if request is None:
+                # если совсем не нашли — просто выполняем функцию без метрик
                 return await func(*args, **kwargs)
             
-            logger.info(f"✅ Request найден: {request.method} {request.url.path}")
+            logger.info(f" найден: {request.method} {request.url.path}")
             start_time = time.time()
             
             try:
@@ -150,7 +149,7 @@ def track_http_metrics():
                     endpoint=request.url.path
                 ).observe(duration)
                 
-                logger.info(f"✅ Метрики обновлены для {request.method} {request.url.path}")
+                logger.info(f" Метрики обновлены для {request.method} {request.url.path}")
                 return result
                 
             except Exception as e:
@@ -158,7 +157,7 @@ def track_http_metrics():
                 duration = time.time() - start_time
                 status = getattr(e, 'status_code', 500)
                 
-                logger.info(f"❌ Ошибка в {request.method} {request.url.path}, обновляем метрики ошибок")
+                logger.info(f" Ошибка в {request.method} {request.url.path}, обновляем метрики ошибок")
                 
                 # 1. Счетчик ошибок (график ошибок)
                 HTTP_REQUESTS_TOTAL.labels(
@@ -181,7 +180,7 @@ def track_http_metrics():
                     status_code=status
                 ).inc()
                 
-                logger.info(f"✅ Метрики ошибок обновлены для {request.method} {request.url.path}")
+                logger.info(f" Метрики ошибок обновлены для {request.method} {request.url.path}")
                 raise
                 
         return wrapper
@@ -329,3 +328,9 @@ def initialize_metrics():
     MEMORY_USAGE_BYTES.set(0)
     
     logger.info("Метрики Prometheus инициализированы для создания графиков")
+
+async def metrics_poller():
+        while True:
+            update_uptime_metric()
+            update_memory_metrics()
+            await asyncio.sleep(5)

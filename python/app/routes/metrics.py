@@ -2,9 +2,9 @@
 """Эндпоинт для метрик Prometheus (для создания графиков)"""
 from fastapi import APIRouter, Request
 from fastapi.responses import Response
-from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import  CONTENT_TYPE_LATEST
 from app.config.settings import settings
-
+from app.metrics import get_metrics_response
 router = APIRouter(prefix="/api/v1",tags=["metrics"])
 
 @router.get("/metrics")
@@ -23,7 +23,4 @@ async def metrics_endpoint(request: Request):
     - Нагрузка на систему
     - Ошибки по типам
     """
-    return Response(
-        content=generate_latest(),
-        media_type=CONTENT_TYPE_LATEST
-    )
+    return get_metrics_response()

@@ -1,15 +1,11 @@
 # main.py
 import uvicorn
-import asyncio
 from fastapi import FastAPI
 
 from contextlib import asynccontextmanager
 from app.utils.logger import logger
 
 from app.services.check_service import CheckService
-from app.services.status_manager import StatusManager
-
-
 
 from app.config.settings import settings
 
@@ -25,15 +21,15 @@ from app.routes.metrics import router as metrics_router
 from app.routes.dashboard import router as dashboard_router
 
 # Импорт метрик
-from app.metrics import initialize_metrics, update_uptime_metric
+from app.metrics import initialize_metrics, metrics_poller
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.check_service = CheckService()
-    app.state.status_manager = StatusManager()
+    initialize_metrics()
+    metrics_poller()
     yield
     logger.info(" Завершение FastAPI")
-
 
 app = FastAPI(
     title=settings.API_TITLE,
