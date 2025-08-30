@@ -162,10 +162,8 @@ def check_captcha(driver):
 
 def verify_page(driver):
     check_503(driver)
-    check_502(driver)
     check_captcha(driver)
-    check_503(driver)
-    check_502(driver)   
+    check_503(driver) 
 
 def get_all_cases(driver,pages_count):
     logger.info(f"[get_all_cases] Парсинг результата.")

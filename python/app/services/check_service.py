@@ -2,9 +2,10 @@ from celery import group
 from app.celery.tasks import verify_court_task, check_court_task
 from app.utils.logger import logger
 from app.parsers.courts.core import parse_courts
+from app.config.settings import settings
 
 class CheckService():
-    def __init__(self, headless=True):
+    def __init__(self, headless=settings.HEADLESS):
         self.headless_mode = headless
     
     def check_courts(self, addresses, fullname_data):
@@ -34,7 +35,7 @@ class CheckService():
         try:
             results = {}
             for address in addresses:
-                court_result = parse_courts(address, fullname_data, headless=True)
+                court_result = parse_courts(address, fullname_data, headless=settings.HEADLESS)
                 results[address] = court_result
             logger.info(f"[Celery] Batch-задача проверки адресов завершена")
             return {

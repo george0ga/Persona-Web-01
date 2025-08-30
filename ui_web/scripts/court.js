@@ -266,7 +266,7 @@ async function checkCourts() {
 
         window.lastCourtResult = {
           html: combinedTree,         // дерево: Суд → ФИО → Категория → HTML
-          urlMap: urlMap                // массив адресов (если пригодится)
+          urlMap: urlMap                // массив адресов
         };
 
         showFinalResult();
@@ -441,10 +441,10 @@ function fixLinks(root, baseUrl) {
   root.querySelectorAll("a[href]").forEach(a => {
     const href = a.getAttribute("href") || "";
     try {
-      a.href = new URL(href, baseUrl).href;     // корректно склеивает любые относительные/корневые пути
+      a.href = new URL(href, baseUrl).href;     
       a.target = "_blank";
       a.rel = "noopener noreferrer";
-      a.removeAttribute("style");               // чтобы css не перебивались инлайнами
+      a.removeAttribute("style");
     } catch { /* игнор */ }
   });
 }

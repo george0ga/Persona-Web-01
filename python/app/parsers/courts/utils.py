@@ -9,6 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from app.services.browser import create_driver
 from app.utils.logger import logger
+from app.config.settings import settings
 
 MAX_RETRIES = 15
 MAX_RETRIES_UNAVAILABLE = 3
@@ -52,7 +53,7 @@ def check_unexpected_alert(driver,):
         logger.warning(f"[check_unexpected_alert] Закрыт alert: {text!r}")
         logger.info("[check_unexpected_alert] Страница обновлена после alert")
     except Exception as e:
-        logger.success(f"[check_unexpected_alert] alert не появился: {e}")
+        logger.success(f"[check_unexpected_alert] alert не появился")
         return
 
 @timing_decorator
@@ -268,7 +269,7 @@ def get_court_info(address,driver):
     need_to_close = False
     if driver is None:
         need_to_close = True
-        driver = create_driver("eager", headless=True)
+        driver = create_driver("eager", headless=settings.HEADLESS)
     try:
         try:
             driver.get(address)

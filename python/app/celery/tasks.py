@@ -3,6 +3,7 @@ from app.parsers.courts.core import parse_courts
 from app.parsers.courts.utils import get_court_info
 from app.utils.logger import logger
 from app.schemas.schemas import PersonInitials
+from app.config.settings import settings
 
 @celery_app.task(bind=True, name="check_court")
 def check_court_task(self, address: str, fullname_data: dict):
@@ -17,7 +18,7 @@ def check_court_task(self, address: str, fullname_data: dict):
 
     try:
         fullname = PersonInitials(**fullname_data)
-        result = parse_courts(address, fullname, set_status, headless=True)
+        result = parse_courts(address, fullname, set_status, headless=settings.HEADLESS)
         return {"address": address, "result": result, "status": "success"}
     except Exception as e:
         return {"address": address, "error": str(e), "status": "error"}

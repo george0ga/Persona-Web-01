@@ -3,14 +3,15 @@ import pytest
 from unittest.mock import Mock, patch
 from app.services.check_service import CheckService
 from app.services.status_manager import StatusManager
+from app.config.settings import settings
 
 class TestCheckService:
     """Тесты для CheckService"""
     
     def setup_method(self):
         """Настройка перед каждым тестом"""
-        self.service = CheckService(headless=True)
-    
+        self.service = CheckService(headless=settings.HEADLESS)
+
     def test_init(self):
         """Тест инициализации сервиса"""
         assert self.service.headless_mode is True

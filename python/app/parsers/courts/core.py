@@ -4,8 +4,9 @@ from app.parsers.courts.yellow import parse_court_yellow
 from app.parsers.courts.utils import get_court_info
 from app.utils.logger import logger
 from app.schemas.schemas import PersonInitials 
+from app.config.settings import settings
 
-def parse_courts(address,fullname,set_status,headless=True):
+def parse_courts(address,fullname,set_status,headless=settings.HEADLESS):
     if isinstance(fullname, dict):
         fullname = PersonInitials(**fullname)
     driver = create_driver("eager", headless)
