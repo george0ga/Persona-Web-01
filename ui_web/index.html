@@ -188,28 +188,32 @@
           </div>
           <div class="left-panel-box">
             <div class="court-status-box">
-              <h2 class="input-group-title">Статус судов</h2>
+              <h2 class="input-group-title">Статус</h2>
               <div id="court-status-list" class="court-status-list">
                 <div class="court-status-list-item">
-                  <span class="court-status-list-item-label">Загрузка очереди</span>
-                  <div class="court-status-list-item-signal">
-                    <div class="unavailable-wave">
-                      <div class="unavailable-bar"></div>
-                      <div class="unavailable-bar"></div>
-                      <div class="unavailable-bar"></div>
-                      <div class="unavailable-bar"></div>
+                  <span class="court-status-list-item-label">Доступность сервиса</span>
+                  <div class="court-status-list-item-signal tooltip-container">
+                    <div class="court-queue-wave status-unknown">
+                      <div class="court-queue-wave-bar"></div>
+                      <div class="court-queue-wave-bar"></div>
+                      <div class="court-queue-wave-bar"></div>
+                      <div class="court-queue-wave-bar"></div>
                     </div>
+                    <span class="custom-tooltip" id="queue-status-text">
+                    </span>
                   </div>
                 </div>
                 <div class="court-status-list-item">
                   <span class="court-status-list-item-label">Доступность судов</span>
-                  <div class="court-status-list-item-signal">
-                    <div class="unavailable-wave">
-                      <div class="unavailable-bar"></div>
-                      <div class="unavailable-bar"></div>
-                      <div class="unavailable-bar"></div>
-                      <div class="unavailable-bar"></div>
+                  <div class="court-status-list-item-signal tooltip-container">
+                    <div class="court-check-time-wave status-unknown">
+                      <div class="court-check-time-wave-bar"></div>
+                      <div class="court-check-time-wave-bar"></div>
+                      <div class="court-check-time-wave-bar"></div>
+                      <div class="court-check-time-wave-bar"></div>
                     </div>
+                    <span class="custom-tooltip" id="check-time-status-text">
+                    </span>
                   </div>
                 </div>
               </div>
@@ -322,6 +326,7 @@
       </div>
     </div>
   </div>
+
 <script src="scripts/config.js"></script>
 <script src="scripts/ui.js"></script>
 <script src="scripts/dashboard.js"></script>

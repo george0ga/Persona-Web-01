@@ -1,4 +1,3 @@
-# routes/health.py
 import time
 import ipaddress
 from fastapi import APIRouter, Request, HTTPException
@@ -37,7 +36,6 @@ def check_health_access(request: Request):
 async def health_check(request: Request):
     check_health_access(request)
     try:
-        # Получаем app из request
         check_manager_ok = request.app.state.check_manager is not None
         status_manager_ok = request.app.state.status_manager is not None
         

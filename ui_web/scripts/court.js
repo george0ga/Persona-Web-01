@@ -305,10 +305,8 @@ async function checkCourts() {
 function openSavedCourtResult() {
   const modal = document.getElementById("court-result-overlay");
 
-  // Сначала сбрасываем состояние
   modal.classList.remove("active");
   clearTaskId();
-  // Плавное открытие
   requestAnimationFrame(() => {
     modal.classList.add("active");
   });
@@ -334,10 +332,8 @@ function applyTableStyling(root = document.getElementById("court-result-content"
   // убрать повторяющиеся id у всех таблиц
   root.querySelectorAll('table[id="tablcont"]').forEach(t => t.removeAttribute('id'));
 
-  // добавить единый класс для стилизации
   root.querySelectorAll("table").forEach(t => t.classList.add("tablcont"));
 
-  // если нужно — прибить инлайны (не трогаем class/id)
   root.querySelectorAll("table, table *").forEach(el => {
     [...el.attributes].forEach(a => {
       const n = a.name.toLowerCase();
@@ -450,11 +446,11 @@ function fixLinks(root, baseUrl) {
 }
 
 // ------- Проверка наличия активной задачи проверки судов ----------------------
+
+
 document.addEventListener("DOMContentLoaded", function() {
-    const savedTaskId = getSavedTaskId();
-    if (savedTaskId) {
-        getCourtStatusById(savedTaskId);
-    }
+    const queueSizePoller = pollQueueSize();
+    setTooltipDataUnavailable();
 });
 
 // ---------------------- Управление состояниями экрана ----------------------

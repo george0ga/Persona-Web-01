@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 set -euo pipefail
 
 ### === Конфиг (можно переопределять через переменные окружения) ===
@@ -18,7 +17,7 @@ WORKER_POOL="${WORKER_POOL:-threads}"
 
 # Нужен ли отдельный Redis-контейнер, если его нет
 CREATE_REDIS_IF_MISSING="${CREATE_REDIS_IF_MISSING:-true}"
-# Публиковать ли Redis наружу (обычно не нужно)
+# Публиковать ли Redis наружу
 EXPOSE_REDIS="${EXPOSE_REDIS:-false}"
 
 ### === Утилиты ===

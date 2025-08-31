@@ -191,7 +191,7 @@ def merge_html_tables(html_list):
 
 
 def clean_table(html_or_tag: Union[str, Tag]) -> Optional[Tag]:
-    # 1) Получаем сам Tag таблицы
+    #Получаем сам Tag таблицы
     if isinstance(html_or_tag, Tag):
         table = html_or_tag
     else:
@@ -200,19 +200,18 @@ def clean_table(html_or_tag: Union[str, Tag]) -> Optional[Tag]:
         if table is None:
             return None
 
-    # 2) Функция удаления нежелательных атрибутов
+    #Удаление атрибутов
     def strip_attrs(tag: Tag):
         for attr in list(tag.attrs):
             if (
                 attr == "style"
-                or attr.startswith("on")           # onmouseover/onclick/...
+                or attr.startswith("on")
                 or attr in ("width", "height", "border",
                             "cellpadding", "cellspacing",
                             "align", "valign", "color")
             ):
                 del tag[attr]
 
-    # чистим саму таблицу и всех потомков
     strip_attrs(table)
     for el in table.find_all(True):
         strip_attrs(el)
@@ -225,7 +224,6 @@ def get_court_type(driver, address):
     driver.get(address)
     verify_page(driver)
     try:
-        # Ждём появления любого из двух элементов
         WebDriverWait(driver, 15).until(
             lambda d: d.find_elements(By.ID, "court_name") or d.find_elements(By.CLASS_NAME, "header__middle")
         )

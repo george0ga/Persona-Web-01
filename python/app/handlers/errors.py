@@ -1,10 +1,8 @@
-# handlers/errors.py
 import os
-from fastapi import Request, HTTPException
+from fastapi import Request
 from fastapi.responses import JSONResponse
 from app.utils.logger import logger
 
-# Кастомные исключения (добавляем в начало файла)
 class CourtParsingError(Exception):
     """Ошибка при парсинге судов"""
     def __init__(self, message: str, court_url: str = None, details: str = None):
@@ -88,7 +86,6 @@ def setup_error_handlers(app):
             }
         )
 
-    # Добавляем обработчики для кастомных исключений
     @app.exception_handler(CourtParsingError)
     async def court_parsing_exception_handler(request: Request, exc: CourtParsingError):
         """Обработчик ошибок парсинга судов"""

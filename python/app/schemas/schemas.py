@@ -58,3 +58,11 @@ class CourtCheckModel(BaseModel):
 
 class CourtVerifyModel(BaseModel):
     address: Union[str, List[str]]
+
+class QueueSizeResponseModel(BaseModel):
+    redis_check_courts_queue_size: int
+    redis_verify_courts_queue_size: int
+    celery_check_courts_queue_size: int
+    celery_verify_courts_queue_size: int
+    celery_court_last_check_time_blue: float
+    celery_court_last_check_time_yellow: float

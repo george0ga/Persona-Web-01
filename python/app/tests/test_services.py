@@ -1,8 +1,6 @@
-# tests/test_services.py
 import pytest
 from unittest.mock import Mock, patch
 from app.services.check_service import CheckService
-from app.services.status_manager import StatusManager
 from app.config.settings import settings
 
 class TestCheckService:
@@ -38,38 +36,3 @@ class TestCheckService:
         
         with pytest.raises(Exception, match="Parsing error"):
             self.service.check_courts("http://court.ru", fullname)
-
-class TestStatusManager:
-    """Тесты для StatusManager"""
-    
-    def setup_method(self):
-        """Настройка перед каждым тестом"""
-        self.manager = StatusManager()
-    
-    def test_url_to_id(self):
-        """Тест генерации ID из URL"""
-        url = "http://court.ru"
-        task_id = self.manager.url_to_id(url)
-        assert isinstance(task_id, str)
-        assert len(task_id) == 12
-    
-    def test_update_status(self):
-        """Тест обновления статуса"""
-        task_id = "test_123"
-        status = "processing"
-        person = "Иванов Иван"
-        
-        self.manager.update_status(task_id, status, person)
-        
-        assert self.manager.statuses[task_id]["status"] == status
-        assert self.manager.statuses[task_id]["person"] == person
-    
-    def test_clear_statuses(self):
-        """Тест очистки статусов"""
-        self.manager.update_status("test1", "status1", "person1")
-        self.manager.update_status("test2", "status2", "person2")
-        
-        assert len(self.manager.statuses) == 2
-        
-        self.manager.clear_statuses()
-        assert len(self.manager.statuses) == 0

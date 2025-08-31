@@ -1,4 +1,3 @@
-# config/settings.py
 import os
 from typing import List
 
@@ -12,7 +11,7 @@ class Settings:
     CORS_ORIGINS: List[str] = [
         "http://127.0.0.1:5500",
         "http://localhost:5500",
-        "null"  # разрешить запросы с file://
+        "null"
     ]
     CORS_METHODS: List[str] = ["GET", "POST"]
     CORS_HEADERS: List[str] = ["Content-Type", "Authorization"]
@@ -41,6 +40,7 @@ class Settings:
     # Redis настройки
     REDIS_HOST: str = os.getenv("REDIS_HOST", "localhost")
     REDIS_PORT: int = int(os.getenv("REDIS_PORT", "6379"))
+    REDIS_URL: str = f"redis://{REDIS_HOST}:{REDIS_PORT}"
     REDIS_DB: int = int(os.getenv("REDIS_DB", "0"))
     REDIS_PASSWORD: str = os.getenv("REDIS_PASSWORD", "")
 

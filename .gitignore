@@ -6,8 +6,12 @@ __pycache__/
 *.pyd
 node_modules
 
+# Логи
 python/logs/
 *.log
 
+# Временные файлы
 excalidraw/
 .vscode/
+
+.github/

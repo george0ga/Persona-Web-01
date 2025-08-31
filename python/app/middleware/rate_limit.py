@@ -1,4 +1,3 @@
-# middleware/rate_limit.py
 from fastapi import FastAPI, Request, HTTPException
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -25,6 +24,3 @@ def setup_rate_limit_middleware(app: FastAPI):
                 "retry_after": getattr(exc, 'retry_after', None)
             }
         )
-    
-    # НЕ добавляем глобальный middleware - только обработчик ошибок
-    # Rate limiting будет работать через декораторы @limiter.limit() на эндпоинтах

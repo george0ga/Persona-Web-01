@@ -23,6 +23,11 @@
   width: 20%;
 }
 
+.court-status-list-item,
+.court-status-list {
+  overflow: visible !important;
+}
+
 body.light-theme .court-status-list-item {
   background-color: #ffffff;
   color: #000000;

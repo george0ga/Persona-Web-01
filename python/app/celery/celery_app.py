@@ -1,5 +1,6 @@
 from celery import Celery
 from app.config.settings import settings
+from kombu import Queue
 
 # Создаем экземпляр Celery
 celery_app = Celery(
@@ -7,6 +8,11 @@ celery_app = Celery(
     broker=settings.CELERY_BROKER_URL,
     backend=settings.CELERY_RESULT_BACKEND,
     include=['app.celery.tasks']  # Модуль с задачами
+)
+
+celery_app.conf.task_queues = (
+    Queue('court_checks'),
+    Queue('court_verifications'),
 )
 
 # Конфигурация Celery
@@ -22,3 +28,4 @@ celery_app.conf.update(
     worker_prefetch_multiplier=1,
     worker_max_tasks_per_child=1000,
 )
+

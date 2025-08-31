@@ -1,98 +1,93 @@
-class SignalBars extends HTMLElement {
-  static get observedAttributes() { return ['total','active','color','empty','size','state']; }
-  constructor(){ super(); this.attachShadow({mode:'open'}); }
-  connectedCallback(){ this.render(); }
-  attributeChangedCallback(){ this.render(); }
+function getAvailabilityState(data, capacity = 10) {
+  const toInt = v => Number.isFinite(+v) ? Math.max(0, +v) : NaN;
 
-  get total(){ return Math.max(1, parseInt(this.getAttribute('total') || '5', 10)); }
-  get active(){ return Math.min(this.total, Math.max(0, parseInt(this.getAttribute('active') || '0', 10))); }
-  get state(){ return (this.getAttribute('state') || '').toLowerCase(); }
+  const wait = toInt(data.redis_check_courts_queue_size) + toInt(data.redis_verify_courts_queue_size);
+  const wip  = toInt(data.celery_check_courts_queue_size) + toInt(data.celery_verify_courts_queue_size);
 
-  _getHostColorFallback() {
-    // 1) CSS-переменная --signal-color → 2) CSS color → 3) null
-    const cs = getComputedStyle(this);
-    const varColor = cs.getPropertyValue('--signal-color').trim();
-    if (varColor) return varColor;
-    const cssColor = cs.color?.trim();
-    return cssColor || null;
-  }
-  _getHostEmptyFallback() {
-    const cs = getComputedStyle(this);
-    const varEmpty = cs.getPropertyValue('--signal-empty').trim();
-    return varEmpty || 'rgba(0,0,0,0.2)';
+  // валидация
+  if (![wait, wip].every(Number.isFinite) || wip > capacity) {
+    return { status: 'неизвестно', level: 0, reason: 'некорректные данные', metrics: { wait, wip, capacity } };
   }
 
-  resolveColor() {
-    // атрибут color (если не пустой)
-    let explicit = this.getAttribute('color');
-    if (explicit != null) {
-      explicit = explicit.trim();
-      if (explicit.length > 0) {
-        // можно указать 'currentColor'
-        return explicit;
-      }
-    }
-
-    // palette по state
-    const palette = { bad: '#ef4444', medium: '#f59e0b', good: '#22c55e', unknown: '#9ca3af' };
-    if (['bad','medium','good','unknown'].includes(this.state)) {
-      return palette[this.state];
-    }
-
-    // авто по доле
-    const ratio = this.active / this.total;
-    if (ratio < 0.34) return palette.bad;
-    if (ratio < 0.67) return palette.medium;
-
-    // если ни атрибута, ни state → пытаемся взять цвет с хоста
-    return this._getHostColorFallback() || palette.good;
+  if ((wait + wip) <= 5){
+    return {status:'excellent',level: 5, reason:'очередь меньше 5', metrics: { wait, wip } };
   }
 
-  render(){
-    const total = this.total;
-    const active = this.active;
-    const state  = this.state;
-
-    const filled = this.resolveColor();
-    // empty: атрибут → CSS var --signal-empty → дефолт
-    const emptyAttr = (this.getAttribute('empty') || '').trim();
-    const empty = emptyAttr || this._getHostEmptyFallback();
-
-    const size   = Math.max(12, parseInt(this.getAttribute('size') || '24', 10));
-
-    const barW = 3, gap = 2, maxH = 20, minH = 6;
-    const viewW = total * barW + (total - 1) * gap;
-    const viewH = maxH;
-
-    let bars = '';
-    for (let i = 0; i < total; i++) {
-      const h = Math.round(minH + (maxH - minH) * (i / Math.max(1, total - 1)));
-      const x = i * (barW + gap);
-      const y = viewH - h;
-      const useFill = (state === 'unknown') ? (filled || 'currentColor') : (i < active ? (filled || 'currentColor') : empty);
-      bars += `<rect x="${x}" y="${y}" width="${barW}" height="${h}" rx="1" ry="1" fill="${useFill}"/>`;
-    }
-
-    // перечёркивание при unknown
-    if (state === 'unknown') {
-      bars += `<line x1="0" y1="0" x2="${viewW}" y2="${viewH}" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>`;
-    }
-
-    const aspect = Math.max(viewW / viewH, 1);
-    const pxW = Math.round(size * aspect);
-
-    this.shadowRoot.innerHTML = `
-      <style>
-        :host { display:inline-block; line-height:0; vertical-align:middle; }
-        svg { min-width:${size}px; }
-      </style>
-      <svg xmlns="http://www.w3.org/2000/svg"
-           width="${pxW}" height="${size}"
-           viewBox="0 0 ${viewW} ${viewH}"
-           aria-label="Signal strength: ${state==='unknown'?'unknown':active+'/'+total}">
-        ${bars}
-      </svg>
-    `;
+  if ((wait + wip) <= 10) {
+    return { status: 'good', level: 4, reason: 'очередь меньше 10', metrics: { wait, wip } };
   }
+
+  if((wait + wip) <= 15){
+    return { status: 'average', level: 3, reason: 'очередь меньше 15', metrics: { wait, wip } };
+  }
+
+  if((wait + wip) >= 15){
+    return { status: 'bad', level: 1, reason: 'большая очередь', metrics: { wait, wip } };
+  }
+  return { status: 'unknown', level: 0, reason: 'error', metrics: { wait, wip } };
 }
-customElements.define('signal-bars', SignalBars);
+
+function getCheckTimeState(data,type) {
+  const toInt = v => Number.isFinite(+v) ? Math.max(0, +v) : NaN;
+  const blue_time = toInt(data.celery_court_last_check_time_blue);
+  const yellow_time  = toInt(data.celery_court_last_check_time_yellow);
+  
+  // валидация
+  if (![blue_time, yellow_time].every(Number.isFinite)) {
+    return { status: 'unknown', level: 0, reason: 'некорректные данные', metrics: { blue_time, yellow_time } };
+  }
+
+  if ((blue_time === 0 && yellow_time === 0)){
+    return {status:'unknown',level: 5, reason:'unknown ', metrics: { blue_time, yellow_time } };
+  }
+
+  if ((blue_time <= 60 && yellow_time <= 80)){
+    return {status:'excellent',level: 5, reason:'очень быстро', metrics: { blue_time, yellow_time } };
+  }
+
+  if ((blue_time <= 120 && yellow_time <= 400)) {
+    return { status: 'good', level: 4, reason: 'хорошо', metrics: { blue_time, yellow_time } };
+  }
+
+  if((blue_time <= 180 && yellow_time <= 800)){
+    return { status: 'average', level: 3, reason: 'средне', metrics: { blue_time, yellow_time } };
+  }
+
+  if((blue_time <= 240 && yellow_time <= 1200)){
+    return { status: 'bad', level: 1, reason: 'очень медленно', metrics: { blue_time, yellow_time } };
+  }
+  return { status: 'unknown', level: 0, reason: 'error', metrics: { blue_time, yellow_time } };
+}
+
+function setCourtQueueStatus(status) {
+  const wave = document.querySelector('.court-queue-wave');
+  wave.className = 'court-queue-wave status-' + status;
+}
+
+function setCourtCheckTimeStatus(status) {
+  const wave = document.querySelector('.court-check-time-wave');
+  wave.className = 'court-check-time-wave status-' + status;
+}
+
+function setTooltipData(data) {
+  blue_time = Math.round(data.celery_court_last_check_time_blue);
+  yellow_time = Math.round(data.celery_court_last_check_time_yellow);
+  blue_text = "Мировые (Центр. Рег.): Данные отсутствуют";
+  yellow_text = "Суды общ. юрисд.: Данные отсутствуют";
+  if (blue_time !== 0){
+    blue_text = `Мировые (Центр. Рег.): ≈ ${blue_time} сек.`;
+  }
+  if (yellow_time !== 0) {
+    yellow_text = `Суды общ. юрисд.: ≈ ${yellow_time} сек.`;
+  }
+
+  document.getElementById('queue-status-text').innerHTML =
+    `Задачи в работе: ${data.celery_check_courts_queue_size}<br>Задачи в очереди: ${data.redis_check_courts_queue_size}`;
+  document.getElementById('check-time-status-text').innerHTML =
+    `Среднее время проверок судов:<br>${blue_text}<br>${yellow_text}`;
+}
+
+function setTooltipDataUnavailable(){
+  document.getElementById('queue-status-text').innerHTML = `Сервис недоступен`;
+  document.getElementById('check-time-status-text').innerHTML = `Сервис недоступен`;
+}

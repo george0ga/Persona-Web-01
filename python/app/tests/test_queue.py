@@ -2,7 +2,7 @@ import time
 import requests
 import pytest
 
-API_URL = "http://localhost:8000/api/v1/courts/batch-verify"  # Измени на свой endpoint, если нужно
+API_URL = "http://localhost:8000/api/v1/courts/batch-verify"
 
 def test_celery_task_result():
     # Отправляем задачу

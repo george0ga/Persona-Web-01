@@ -1,4 +1,3 @@
-# routes/sse.py
 import asyncio
 import json
 from fastapi import APIRouter, Request
@@ -54,7 +53,6 @@ async def stream_check_courts_result(task_id: str, request: Request):
             if statuses:
                 yield f"data: {json.dumps({'status': 'progress', 'subtasks': statuses}, ensure_ascii=False)}\n\n"
             await asyncio.sleep(1)
-        # Финальный результат
         results = group_result.get()
         yield f"data: {json.dumps({'status': 'success', 'result': results}, ensure_ascii=False)}\n\n"
     return StreamingResponse(event_generator(), media_type="text/event-stream")
