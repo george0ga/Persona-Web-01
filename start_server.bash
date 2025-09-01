@@ -1,7 +1,7 @@
 set -euo pipefail
 
 ### === Конфиг (можно переопределять через переменные окружения) ===
-IMAGE="${IMAGE:-persona_server}"          # образ API/worker
+IMAGE="${IMAGE:-persona-api}"          # образ API/worker
 API_NAME="${API_NAME:-persona-api}"
 WORKER_NAME="${WORKER_NAME:-persona-worker}"
 REDIS_NAME="${REDIS_NAME:-redis}"         # имя контейнера Redis (существующий или будет создан)
@@ -12,7 +12,6 @@ REDIS_PORT="${REDIS_PORT:-6379}"
 REDIS_DB="${REDIS_DB:-0}"
 REDIS_PASSWORD="${REDIS_PASSWORD:-}"      # если нужен пароль, задайте его в ENV
 
-WORKER_CONCURRENCY="${WORKER_CONCURRENCY:-3}"
 WORKER_POOL="${WORKER_POOL:-threads}"
 
 # Нужен ли отдельный Redis-контейнер, если его нет
@@ -127,10 +126,15 @@ run_api() {
 }
 
 run_worker() {
-  # Запуск двух воркеров для разных очередей
   for QUEUE in court_checks court_verifications; do
     WORKER_CONTAINER="${WORKER_NAME}-${QUEUE}"
-    # Убиваем старый контейнер, если есть
+
+    if [[ "$QUEUE" == "court_checks" ]]; then
+      CONCURRENCY=10
+    else
+      CONCURRENCY=1
+    fi
+
     if container_exists "$WORKER_CONTAINER"; then
       if container_running "$WORKER_CONTAINER"; then
         log "Останавливаю старый worker $WORKER_CONTAINER"
@@ -140,7 +144,7 @@ run_worker() {
       fi
     fi
 
-    log "Запускаю Celery worker $WORKER_CONTAINER для очереди $QUEUE"
+    log "Запускаю Celery worker $WORKER_CONTAINER для очереди $QUEUE с concurrency=$CONCURRENCY"
     docker run -d --name "$WORKER_CONTAINER" --network "$NETWORK" \
       -e REDIS_HOST="$REDIS_HOST" \
       -e REDIS_PORT="$REDIS_PORT" \
@@ -149,7 +153,7 @@ run_worker() {
       --restart unless-stopped \
       "$IMAGE" \
       celery -A app.celery.celery_app.celery_app worker \
-        --pool="$WORKER_POOL" --concurrency="$WORKER_CONCURRENCY" -l info -Q "$QUEUE" >/dev/null
+        --pool="$WORKER_POOL" --concurrency="$CONCURRENCY" -l info -Q "$QUEUE" >/dev/null
 
     ensure_connected "$WORKER_CONTAINER"
   done
@@ -204,6 +208,56 @@ EOF
   done
 }
 
+install_deps() {
+  log "Проверяю и устанавливаю зависимости для запуска headless Chrome в контейнере..."
+  # Проверяем, что Dockerfile содержит нужные зависимости
+  DOCKERFILE_PATH="dockerfile"
+  if [[ -f "$DOCKERFILE_PATH" ]]; then
+    if ! grep -q "libasound2" "$DOCKERFILE_PATH"; then
+      warn "В Dockerfile не найдены зависимости для headless Chrome. Добавьте следующий блок в секцию RUN:"
+      echo '
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        wget \
+        unzip \
+        fonts-liberation \
+        libasound2 \
+        libatk-bridge2.0-0 \
+        libatk1.0-0 \
+        libc6 \
+        libcairo2 \
+        libcups2 \
+        libdbus-1-3 \
+        libdrm2 \
+        libgbm1 \
+        libgtk-3-0 \
+        libnspr4 \
+        libnss3 \
+        libx11-xcb1 \
+        libxcomposite1 \
+        libxdamage1 \
+        libxrandr2 \
+        xdg-utils \
+        libu2f-udev \
+        libvulkan1 \
+        libxss1 \
+        libappindicator3-1 \
+        libatspi2.0-0 \
+        libwayland-client0 \
+        libwayland-cursor0 \
+        libwayland-egl1 \
+        libxkbcommon0 \
+        && rm -rf /var/lib/apt/lists/*
+'
+      warn "После внесения изменений пересоберите образ: docker build -t $IMAGE ."
+    else
+      log "Зависимости для headless Chrome уже присутствуют в Dockerfile."
+    fi
+  else
+    warn "Dockerfile не найден по пути $DOCKERFILE_PATH. Пропускаю проверку зависимостей."
+  fi
+}
+
 show_status() {
   echo
   log "Статус контейнеров:"
@@ -218,6 +272,7 @@ show_status() {
 
 main() {
   need_cmd docker
+  install_deps
   ensure_network
   run_redis_if_needed
   run_api

@@ -89,7 +89,7 @@ function streamQueueSizeSSE(onUpdate, onError) {
         } catch {
             data = event.data;
         }
-        //console.log("SSE Queue size update:", data);
+        console.log("SSE Queue size update:", data);
         availability_state = getAvailabilityState(data);
         check_time_state = getCheckTimeState(data);
         setCourtQueueStatus(availability_state.status);

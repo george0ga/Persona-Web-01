@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="/styles/screens/debug.css">
   <link rel="stylesheet" href="/styles/screens/settings.css">
   <link rel="stylesheet" href="/styles/screens/sidebar.css">
+  <link rel="stylesheet" href="/styles/screens/help.css">
   <link rel="stylesheet" href="/styles/screens/courts/base.css">
 
   <!-- 3. Стили для отдельных блоков приложения -->
@@ -100,14 +101,14 @@
           </button>
           <span class="nav-tooltip">Тема</span>
         </li>
-        <li class="nav-item">
+        <li class="nav-item hidden">
           <button class="nav-link" id="sidebar-dashboard-btn" type="button">
             <span class="material-symbols-outlined">analytics</span>
             <span class="nav-label">Дашборд</span>
           </button>
           <span class="nav-tooltip">Дашборд</span>
         </li>
-        <li class="nav-item">
+        <li class="nav-item hidden">
           <a class="nav-link" id="sidebar-debug-btn">
             <span class="material-symbols-outlined">bug_report</span>
             <span class="nav-label">Debug меню</span>
@@ -296,6 +297,24 @@
       </div>
     </div>
   </div>
+      <!-- Всплывающее окно раздела помощь -->
+  </div>
+  <div id="help-overlay" class="modal-overlay hidden">
+    <div class="modal-window help-modal">
+      <h2>Помощь</h2>
+      <div class="help-content">
+        <ul style="padding-left: 18px; margin: 0; font-size: 15px; line-height: 1.7; color: #333;">
+          <li>Откройте раздел судов и заполните поля. Минимальные данные для проверки: <b>URL-адрес суда и Фамилия</b></li>
+          <li>Чтобы добавить URL-адрес вставьте в поле ссылку и нажмите кнопку<b> «Добавить»</b></li>
+          <li>Далее нажмите кнопку <b>«Проверить суды»</b> и дождитесь результатов.</li>
+          <li><b>Обратите внимание, что из-за высокой нагрузки на суды, проверки могут затянутся на продолжительное время</b>.</li>
+          <li>Чтобы узнать размер очереди, наведите курсор на индикатор загрузки.</li>
+          <li>После окончания проверки нажмите на кнопку <b>«Показать результат»</b>.</li>
+          <li>Если у вас возникли вопросы или предложения, пожалуйста, свяжитесь со мной в личные сообщения.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
   <!-- Всплывающее окно отладки-->
   <div id="debug-overlay" class="modal-overlay hidden">
     <div class="modal-window debug-modal">
@@ -312,9 +331,7 @@
           <span class="label-text">Выбор темы</span>
         </div>
       </div>
-    
     </div>
-  </div>
   <!-- Всплывающее окно с дашбордом -->
   <div id="dashboard-overlay" class="modal-overlay hidden">
     <div class="modal-window dashboard-modal">
@@ -335,6 +352,7 @@
 <script src="scripts/signal_bars.js"></script>
 <script src="scripts/court.js"></script>
 <script src="scripts/sse.js"></script>
+<script src="scripts/help.js"></script>
 <script src="renderer.js"></script>
 </body>
 </html>

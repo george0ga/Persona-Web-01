@@ -1,0 +1,78 @@
+
+.help-modal {
+  max-width: 70%;
+  max-height: 70vh;
+  background: #151515;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px 0 rgba(60, 60, 90, 0.10), 0 1.5px 6px 0 rgba(60, 60, 90, 0.08);
+  padding: 32px 28px 24px 28px;
+  display: flex;
+  flex-direction: column;
+}
+
+.help-modal h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #ffffff;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+.help-content ul {
+  list-style: disc inside;
+  padding-left: 0;
+  margin: 0;
+}
+
+.help-content li {
+  margin-bottom: 13px;
+  font-size: 15.5px;
+  color: #ffffff;
+  background: #2b2b2b;
+  border-radius: 8px;
+  padding: 8px 14px 8px 18px;
+  box-shadow: 0 1px 2px 0 rgba(60,60,90,0.03);
+  transition: background 0.2s;
+}
+
+.help-content li b {
+  color: #3b6be8;
+  font-weight: 600;
+}
+.help-content li:last-child {
+  margin-bottom: 0;
+}
+
+.help-content {
+  margin-top: 6px;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.modal-overlay.help-modal {
+  background: rgba(44, 48, 60, 0.18);
+}
+
+body.light-theme .modal-overlay.help-modal {
+  background: rgba(200, 200, 200, 0.6);
+}
+
+body.light-theme .help-modal {
+  background: #ffffff;
+  color: #2d2d3a;
+}
+
+body.light-theme .help-modal h2{
+  color: #000000;
+}
+
+body.light-theme .help-content li {
+  background: #f7f8fa;
+  color: #2d2d3a;
+}

@@ -1026,7 +1026,7 @@ def modern_type_court_check(driver, address,court_name, names,set_status):
                     category = categories[category_index]
                     category_name = category.get_attribute("label")
                     logger.info(f"[modern_type_court_check] Обработка категории: {category_name}")
-
+                    
                     subcategories = [
                         {"name": s.text.strip(), "value": s.get_attribute("value")}
                         for s in category.find_elements(By.TAG_NAME, "option")
@@ -1035,7 +1035,7 @@ def modern_type_court_check(driver, address,court_name, names,set_status):
                     for sub in subcategories:
                         subcategory_name = sub["name"]
                         logger.info(f"[modern_type_court_check] Подкатегория: {subcategory_name}")
-
+                        set_status(f"Проверка категории {category_name}, подкатегория {subcategory_name} : {name_to_check}", court_name)
                         # Обновляем select и подкатегорию
                         category_select_elem = WebDriverWait(driver, 10).until(
                             EC.presence_of_element_located((By.ID, "process-type"))
@@ -1091,7 +1091,7 @@ def modern_type_court_check(driver, address,court_name, names,set_status):
                     break
 
             logger.info(f"[modern_type_court_check] === Конец итерации по имени: {name_to_check} ===")
-
+            set_status(f"Проверка по ФИО: {name_to_check} завершена", court_name)
     except Exception as e:
         logger.exception(f"[modern_type_court_check] Критическая ошибка при обработке сайта {address}: {e}")
 
@@ -1141,7 +1141,7 @@ def multiserver_type_court_check(driver, address, court_name, names,set_status):
 
                     for subcategory in subcategories:
                         logger.info(f"[multiserver_type_court_check] Подкатегория: {subcategory['name']}")
-
+                        set_status(f"Проверка категории {category_name}, подкатегория {subcategory['name']} : {name_to_check}", court_name)
                         fresh_category_buttons = get_category_and_subcategory_btns_new(driver)
 
                         refreshed_element = next(
@@ -1209,7 +1209,7 @@ def multiserver_type_court_check(driver, address, court_name, names,set_status):
                         logger.info("[multiserver_type_court_check] Нажата кнопка 'Изменить'")
                         verify_page(driver)
                 logger.info("=== Конец итерации по имени ===")
-
+                set_status(f"Проверка по ФИО: {name_to_check} завершена", court_name)
     except Exception as e:
         logger.exception(f"[multiserver_type_court_check] Критическая ошибка при проверке: {e}")
         raise

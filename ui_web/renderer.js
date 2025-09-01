@@ -4,3 +4,4 @@ window.openSavedCourtResult = openSavedCourtResult;
 window.closeCourtResultModal = closeCourtResultModal;
 window.openDebugMenu = openDebugMenu;
 window.closeDebugMenu = closeDebugMenu;
+window.openHelpMenu = openHelpMenu;
