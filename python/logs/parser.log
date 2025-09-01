@@ -10124,3 +10124,5 @@ TypeError: CourtInfo.__init__() missing 2 required positional arguments: 'type' 
 2025-09-01 10:18:56.970 | INFO     | app.metrics.redis_client:reset_metrics_timer:65 - Метрики времени проверок судов сброшены
 2025-09-01 10:28:56.976 | INFO     | app.metrics.redis_client:reset_check_time_metrics:57 - Очереди пусты, сбрасываем метрики времени проверок судов
 2025-09-01 10:28:56.979 | INFO     | app.metrics.redis_client:reset_metrics_timer:65 - Метрики времени проверок судов сброшены
+2025-09-01 10:38:56.986 | INFO     | app.metrics.redis_client:reset_check_time_metrics:57 - Очереди пусты, сбрасываем метрики времени проверок судов
+2025-09-01 10:38:56.989 | INFO     | app.metrics.redis_client:reset_metrics_timer:65 - Метрики времени проверок судов сброшены
