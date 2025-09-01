@@ -33,7 +33,7 @@ class Settings:
     HOST = "0.0.0.0"
     PORT = 8000
     DEBUG = os.getenv("DEBUG", "0") == "1"
-    HEADLESS = False
+    HEADLESS = True
 
     # Redis настройки
     REDIS_HOST: str = os.getenv("REDIS_HOST", "redis")
