@@ -16,7 +16,6 @@ KEY_RUNNING_CHECK  = "metrics:running:check_court"
 KEY_RUNNING_VERIFY = "metrics:running:verify_court"
 
 def get_queue_size_redis(queue_name):
-    r = redis.Redis.from_url("redis://localhost:6379/0")
     return r.llen(queue_name)
 
 def decrement_court_check_size():
