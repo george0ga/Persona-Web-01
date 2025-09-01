@@ -1,4 +1,5 @@
 import time
+import shutil
 
 from app.services.browser import create_driver
 from app.parsers.courts.blue import parse_court_blue
@@ -12,7 +13,7 @@ from app.metrics.redis_client import set_court_last_check_time
 def parse_courts(address,fullname,set_status,headless=settings.HEADLESS):
     if isinstance(fullname, dict):
         fullname = PersonInitials(**fullname)
-    driver = create_driver("eager", headless)
+    driver, profile_dir = create_driver("eager", headless)
     try:
         court_info = get_court_info(address,driver)
         court_type = court_info.type
@@ -33,4 +34,5 @@ def parse_courts(address,fullname,set_status,headless=settings.HEADLESS):
         raise RuntimeError(f"Ошибка выполнения проверки: {e}")  # <-- raise, не return!
     finally:
         driver.quit()
+        shutil.rmtree(profile_dir, ignore_errors=True)
         logger.debug(f"[DRIVER] Завершение драйвера для {address}")

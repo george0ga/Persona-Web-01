@@ -1,4 +1,5 @@
 import time
+import shutil
 
 from bs4 import BeautifulSoup, Tag
 from dataclasses import dataclass
@@ -267,7 +268,7 @@ def get_court_info(address,driver):
     need_to_close = False
     if driver is None:
         need_to_close = True
-        driver = create_driver("eager", headless=settings.HEADLESS)
+        driver, profile_dir = create_driver("eager", headless=settings.HEADLESS)
     try:
         try:
             driver.get(address)
@@ -288,6 +289,7 @@ def get_court_info(address,driver):
         if need_to_close:
             try:
                 driver.quit()
+                shutil.rmtree(profile_dir, ignore_errors=True)
             except Exception as e:
                 logger.error(f"[get_court_info] Ошибка при закрытии драйвера: {e}")
 

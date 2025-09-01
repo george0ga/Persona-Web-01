@@ -26,7 +26,7 @@ def create_driver(page_load_strategy="normal",headless = True):
     try:
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         logger.success(" Драйвер успешно создан")
-        return driver
+        return driver, profile_dir
     except Exception as e:
         shutil.rmtree(profile_dir, ignore_errors=True)
         logger.exception(f" Ошибка при создании драйвера: {e}")
