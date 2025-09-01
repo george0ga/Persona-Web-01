@@ -20,6 +20,11 @@ CREATE_REDIS_IF_MISSING="${CREATE_REDIS_IF_MISSING:-true}"
 # Публиковать ли Redis наружу
 EXPOSE_REDIS="${EXPOSE_REDIS:-false}"
 
+NGINX_NAME="${NGINX_NAME:-persona-nginx}"
+NGINX_PORT="${NGINX_PORT:-8080}"
+NGINX_CONF_HOST="${NGINX_CONF_HOST:-$(pwd)/nginx.conf}"
+UI_WEB_HOST="${UI_WEB_HOST:-$(pwd)/ui_web}"
+
 ### === Утилиты ===
 log() { echo -e "\033[1;32m[+]\033[0m $*"; }
 warn() { echo -e "\033[1;33m[!]\033[0m $*"; }
@@ -147,6 +152,55 @@ run_worker() {
   done
 }
 
+run_nginx() {
+  # Убиваем старый контейнер, если есть
+  if container_exists "$NGINX_NAME"; then
+    if container_running "$NGINX_NAME"; then
+      log "Останавливаю старый Nginx контейнер $NGINX_NAME"
+      docker rm -f "$NGINX_NAME" >/dev/null
+    else
+      docker rm "$NGINX_NAME" >/dev/null || true
+    fi
+  fi
+
+  if [[ ! -f "$NGINX_CONF_HOST" ]]; then
+    warn "nginx.conf не найден по пути $NGINX_CONF_HOST — создаю дефолтный"
+    cat > "$NGINX_CONF_HOST" <<EOF
+events {}
+http {
+    server {
+        listen 80;
+        server_name _;
+        root /usr/share/nginx/html;
+        index index.html;
+        location / {
+            try_files \$uri \$uri/ /index.html;
+        }
+    }
+}
+EOF
+  fi
+
+  log "Запускаю Nginx контейнер $NGINX_NAME (порт ${NGINX_PORT}->80)"
+  docker run -d --name "$NGINX_NAME" --network "$NETWORK" \
+    -p "${NGINX_PORT}:80" \
+    -v "$UI_WEB_HOST:/usr/share/nginx/html:ro" \
+    -v "$NGINX_CONF_HOST:/etc/nginx/nginx.conf:ro" \
+    --restart unless-stopped \
+    nginx:1.25-alpine >/dev/null
+
+  ensure_connected "$NGINX_NAME"
+
+  log "Жду старт Nginx и делаю пробный HTTP-запрос..."
+  for i in {1..10}; do
+    if curl -fsS "http://127.0.0.1:${NGINX_PORT}/" >/dev/null 2>&1; then
+      log "Nginx отвечает на порту ${NGINX_PORT}"
+      break
+    fi
+    sleep 1
+  done
+}
+
 show_status() {
   echo
   log "Статус контейнеров:"
@@ -165,6 +219,7 @@ main() {
   run_redis_if_needed
   run_api
   run_worker
+  run_nginx
   show_status
 }
 
