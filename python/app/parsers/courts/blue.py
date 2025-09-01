@@ -210,7 +210,7 @@ def parse_court_blue(driver, address,court_name,fullname,set_status):
         search_page = driver.find_elements(By.CLASS_NAME,"menu-link")
         if not search_page:
             logger.error("Не найден элемент search_page")
-            return {f"Сайт {address}": {"__error__": "Ошибка при работе с судом."}}
+            raise RuntimeError(f"Ошибка при работе с судом: {address}")
         search_page[0].click()
         verify_page(driver)
         WebDriverWait(driver, 10).until(
@@ -220,7 +220,7 @@ def parse_court_blue(driver, address,court_name,fullname,set_status):
 
         if not case_types_buttons:
             logger.error("Не найден элемент case_types_buttons")
-            return {f"Сайт {address}": {"__error__": "Ошибка при работе с судом."}}
+            raise RuntimeError(f"Ошибка при работе с судом: {address}")
         
         first_button = driver.find_elements(By.ID,"type_0")
         set_status(f"Начало проверки по ФИО : {name_to_check}",court_name)

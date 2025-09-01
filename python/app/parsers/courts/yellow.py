@@ -512,7 +512,7 @@ def get_court_type(driver, address):
 
         if sud_delo_button is None:
             logger.error(f"[get_court_type] Не найдена кнопка 'Судебное делопроизводство' на сайте {address}")
-            return {f"Сайт {address}": {"__error__": "Ошибка при работе с судом. Не найдено кнопка судебное делопроизовдство"}}
+            raise RuntimeError(f"Ошибка при работе с судом: {address}")
 
         logger.info(f"[get_court_type] Кнопка 'Судебное делопроизводство' найдена — выполняется переход")
         driver.execute_script("arguments[0].scrollIntoView(true);", sud_delo_button)

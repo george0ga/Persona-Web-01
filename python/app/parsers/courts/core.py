@@ -30,7 +30,7 @@ def parse_courts(address,fullname,set_status,headless=settings.HEADLESS):
             return {f"Сайт {address}": {"__error__": "Сайт не поддерживается"}}
     except Exception as e:
         logger.exception(f"[PROCESS ERROR] {address}: {e}")
-        return {f"Сайт {address}": {"__error__": f"Ошибка выполнения проверки: {e}"}}
+        raise RuntimeError(f"Ошибка выполнения проверки: {e}")  # <-- raise, не return!
     finally:
         driver.quit()
         logger.debug(f"[DRIVER] Завершение драйвера для {address}")
