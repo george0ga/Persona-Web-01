@@ -14,8 +14,6 @@ def create_driver(page_load_strategy="normal",headless = True):
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("--ignore-certificate-errors")
     options.add_argument("--log-level=3")
-    profile_dir = tempfile.mkdtemp(prefix=f"chrome-{uuid.uuid4().hex}-")
-    options.add_argument(f"--user-data-dir={profile_dir}")
     if headless:
         options.add_argument("--headless")
         options.add_argument("--window-size=1920,1080")
@@ -26,8 +24,7 @@ def create_driver(page_load_strategy="normal",headless = True):
     try:
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         logger.success(" Драйвер успешно создан")
-        return driver, profile_dir
+        return driver
     except Exception as e:
-        shutil.rmtree(profile_dir, ignore_errors=True)
         logger.exception(f" Ошибка при создании драйвера: {e}")
         raise
