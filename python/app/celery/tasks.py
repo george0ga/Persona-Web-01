@@ -28,7 +28,7 @@ def check_court_task(self, address: str, fullname_data: dict):
         return {"address": address, "result": result, "status": "success"}
     except Exception as e:
         decrement_court_check_size()
-        return {"address": address, "error": str(e), "status": "error"}
+        raise RuntimeError(f"Ошибка проверки суда ({address}): {e}")
 
 @celery_app.task(queue='court_verifications', bind=True, name="verify_court")
 def verify_court_task(self, address: str):
@@ -42,7 +42,7 @@ def verify_court_task(self, address: str):
             meta={'status': 'Проверяем адрес суда...'}
         )
         increment_court_verify_size()
-        court_info = get_court_info(address,None)
+        court_info = get_court_info(address, None)
         court_name = court_info.name
         if isinstance(court_name, str):
             result = court_name.capitalize()
@@ -50,11 +50,7 @@ def verify_court_task(self, address: str):
             result = "Не удалось получить название суда"
             logger.info(f"[Celery] Задача {self.request.id} завершена с ошибкой")
             decrement_court_verify_size()
-            return {
-            'status': 'error',
-            'result': result,
-            'task_id': self.request.id
-        }
+            raise RuntimeError(result)
         logger.info(f"[Celery] Задача {self.request.id} завершена успешно")
         decrement_court_verify_size()
         return {
@@ -62,7 +58,6 @@ def verify_court_task(self, address: str):
             'result': result,
             'task_id': self.request.id
         }
-        
     except Exception as e:
         logger.error(f"[Celery] Ошибка в задаче {self.request.id}: {e}")
         decrement_court_verify_size()
