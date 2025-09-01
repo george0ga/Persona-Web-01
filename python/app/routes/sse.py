@@ -4,6 +4,9 @@ from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 from app.celery.celery_app import celery_app
 from celery.result import GroupResult, AsyncResult
+from app.metrics.redis_client import (get_court_check_size,
+                                      get_court_verify_size, get_queue_size_redis,
+                                      get_court_last_check_time)
 
 router = APIRouter(prefix="/api/v1",tags=["sse"])
 
@@ -55,4 +58,33 @@ async def stream_check_courts_result(task_id: str, request: Request):
             await asyncio.sleep(1)
         results = group_result.get()
         yield f"data: {json.dumps({'status': 'success', 'result': results}, ensure_ascii=False)}\n\n"
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+@router.get("/metrics/queue_size/stream")
+async def stream_queue_size(request: Request):
+    """
+    SSE-эндпоинт для стриминга размера очередей задач.
+    """
+    async def event_generator():
+        while True:
+            if await request.is_disconnected():
+                break
+            result = {}
+            result["redis_courts"] = get_queue_size_redis("court_checks") or 0
+            result["redis_verify"] = get_queue_size_redis("court_verifications") or 0
+            result["court"] = get_court_check_size() or 0
+            result["verify"] = get_court_verify_size() or 0
+            result["celery_court_last_check_time_blue"] = float(get_court_last_check_time("blue") or 0.0)
+            result["celery_court_last_check_time_yellow"] = float(get_court_last_check_time("yellow") or 0.0)
+            data = {
+                "redis_check_courts_queue_size": result["redis_courts"],
+                "redis_verify_courts_queue_size": result["redis_verify"],
+                "celery_check_courts_queue_size": result["court"],
+                "celery_verify_courts_queue_size": result["verify"],
+                "celery_court_last_check_time_blue": result["celery_court_last_check_time_blue"],
+                "celery_court_last_check_time_yellow": result["celery_court_last_check_time_yellow"]
+            }
+            yield f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
+            await asyncio.sleep(15)  # интервал обновления в секундах
+
     return StreamingResponse(event_generator(), media_type="text/event-stream")

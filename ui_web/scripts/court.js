@@ -449,8 +449,8 @@ function fixLinks(root, baseUrl) {
 
 
 document.addEventListener("DOMContentLoaded", function() {
-    const queueSizePoller = pollQueueSize();
     setTooltipDataUnavailable();
+    streamQueueSizeSSE();
 });
 
 // ---------------------- Управление состояниями экрана ----------------------

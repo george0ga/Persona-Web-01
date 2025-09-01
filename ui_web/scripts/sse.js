@@ -80,25 +80,25 @@ function getCourtStatusById(taskId) {
     }
 }
 
-function pollQueueSize(intervalMs = 3000) {
-    async function fetchQueueSize() {
+function streamQueueSizeSSE(onUpdate, onError) {
+    const eventSource = new EventSource(`${API_URL}/metrics/queue_size/stream`);
+    eventSource.onmessage = (event) => {
+        let data;
         try {
-            const response = await fetch(`${API_URL}/metrics/queue_size`);
-            if (!response.ok) {
-                throw new Error("Ошибка запроса метрик");
-            }
-            const data = await response.json();
-            console.log("Queue size metrics:", data);
-            availability_state = getAvailabilityState(data);
-            check_time_state = getCheckTimeState(data);
-            setCourtQueueStatus(availability_state.status);
-            setCourtCheckTimeStatus(check_time_state.status);
-            setTooltipData(data);
-        } catch (err) {
-            console.error("Ошибка получения метрик очереди:", err);
+            data = JSON.parse(event.data);
+        } catch {
+            data = event.data;
         }
-    }
-
-    fetchQueueSize(); // первый запуск сразу
-    return setInterval(fetchQueueSize, intervalMs);
+        //console.log("SSE Queue size update:", data);
+        availability_state = getAvailabilityState(data);
+        check_time_state = getCheckTimeState(data);
+        setCourtQueueStatus(availability_state.status);
+        setCourtCheckTimeStatus(check_time_state.status);
+        setTooltipData(data);
+    };
+    eventSource.onerror = (err) => {
+        console.error("Ошибка SSE очереди:", err);
+        eventSource.close();
+    };
+    return eventSource; // чтобы можно было закрыть при необходимости
 }

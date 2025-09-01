@@ -119,28 +119,32 @@ run_api() {
 }
 
 run_worker() {
-  # Убиваем старый контейнер, если есть
-  if container_exists "$WORKER_NAME"; then
-    if container_running "$WORKER_NAME"; then
-      log "Останавливаю старый worker $WORKER_NAME"
-      docker rm -f "$WORKER_NAME" >/dev/null
-    else
-      docker rm "$WORKER_NAME" >/dev/null || true
+  # Запуск двух воркеров для разных очередей
+  for QUEUE in court_checks court_verifications; do
+    WORKER_CONTAINER="${WORKER_NAME}-${QUEUE}"
+    # Убиваем старый контейнер, если есть
+    if container_exists "$WORKER_CONTAINER"; then
+      if container_running "$WORKER_CONTAINER"; then
+        log "Останавливаю старый worker $WORKER_CONTAINER"
+        docker rm -f "$WORKER_CONTAINER" >/dev/null
+      else
+        docker rm "$WORKER_CONTAINER" >/dev/null || true
+      fi
     fi
-  fi
 
-  log "Запускаю Celery worker $WORKER_NAME"
-  docker run -d --name "$WORKER_NAME" --network "$NETWORK" \
-    -e REDIS_HOST="$REDIS_NAME" \
-    -e REDIS_PORT="$REDIS_PORT" \
-    -e REDIS_DB="$REDIS_DB" \
-    -e REDIS_PASSWORD="$REDIS_PASSWORD" \
-    --restart unless-stopped \
-    "$IMAGE" \
-    celery -A app.celery.celery_app.celery_app worker \
-      --pool="$WORKER_POOL" --concurrency="$WORKER_CONCURRENCY" -l info >/dev/null
+    log "Запускаю Celery worker $WORKER_CONTAINER для очереди $QUEUE"
+    docker run -d --name "$WORKER_CONTAINER" --network "$NETWORK" \
+      -e REDIS_HOST="$REDIS_NAME" \
+      -e REDIS_PORT="$REDIS_PORT" \
+      -e REDIS_DB="$REDIS_DB" \
+      -e REDIS_PASSWORD="$REDIS_PASSWORD" \
+      --restart unless-stopped \
+      "$IMAGE" \
+      celery -A app.celery.celery_app.celery_app worker \
+        --pool="$WORKER_POOL" --concurrency="$WORKER_CONCURRENCY" -l info -Q "$QUEUE" >/dev/null
 
-  ensure_connected "$WORKER_NAME"
+    ensure_connected "$WORKER_CONTAINER"
+  done
 }
 
 show_status() {
@@ -150,7 +154,8 @@ show_status() {
   echo
   log "Подсказки:"
   echo "  - Логи API:     docker logs -f ${API_NAME}"
-  echo "  - Логи worker:  docker logs -f ${WORKER_NAME}"
+  echo "  - Логи worker court_checks:     docker logs -f ${WORKER_NAME}-court_checks"
+  echo "  - Логи worker court_verifications: docker logs -f ${WORKER_NAME}-court_verifications"
   echo "  - Проверка API: curl -I http://127.0.0.1:${API_PORT}/docs || curl -I http://127.0.0.1:${API_PORT}/"
 }
 
