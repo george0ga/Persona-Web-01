@@ -25,6 +25,9 @@ NGINX_PORT="${NGINX_PORT:-8080}"
 NGINX_CONF_HOST="${NGINX_CONF_HOST:-$(pwd)/nginx.conf}"
 UI_WEB_HOST="${UI_WEB_HOST:-$(pwd)/ui_web}"
 
+# --- ВАЖНО: используем имя контейнера Redis как хост для всех сервисов ---
+REDIS_HOST="${REDIS_NAME}"
+
 ### === Утилиты ===
 log() { echo -e "\033[1;32m[+]\033[0m $*"; }
 warn() { echo -e "\033[1;33m[!]\033[0m $*"; }
@@ -103,7 +106,7 @@ run_api() {
   log "Запускаю API контейнер $API_NAME (порт ${API_PORT}->8000)"
   docker run -d --name "$API_NAME" --network "$NETWORK" \
     -p "${API_PORT}:8000" \
-    -e REDIS_HOST="$REDIS_NAME" \
+    -e REDIS_HOST="$REDIS_HOST" \
     -e REDIS_PORT="$REDIS_PORT" \
     -e REDIS_DB="$REDIS_DB" \
     -e REDIS_PASSWORD="$REDIS_PASSWORD" \
@@ -139,7 +142,7 @@ run_worker() {
 
     log "Запускаю Celery worker $WORKER_CONTAINER для очереди $QUEUE"
     docker run -d --name "$WORKER_CONTAINER" --network "$NETWORK" \
-      -e REDIS_HOST="$REDIS_NAME" \
+      -e REDIS_HOST="$REDIS_HOST" \
       -e REDIS_PORT="$REDIS_PORT" \
       -e REDIS_DB="$REDIS_DB" \
       -e REDIS_PASSWORD="$REDIS_PASSWORD" \
