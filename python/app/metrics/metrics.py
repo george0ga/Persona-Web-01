@@ -24,4 +24,4 @@ async def start_queue_monitor():
 
 async def start_metrics():
     await start_queue_monitor()
-    asyncio.create_task(reset_metrics_timer(600))  # Сброс каждые 600 секунд
+    asyncio.create_task(reset_metrics_timer(28800))  # Сброс каждые 48000 секунд

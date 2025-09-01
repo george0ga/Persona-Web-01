@@ -217,6 +217,9 @@ def clean_table(html_or_tag: Union[str, Tag]) -> Optional[Tag]:
     for el in table.find_all(True):
         strip_attrs(el)
 
+    for img in table.find_all("img", src="/images/arow.gif"):
+        img["src"] = "assets/images/case.gif"
+
     return table
 
 @timing_decorator
