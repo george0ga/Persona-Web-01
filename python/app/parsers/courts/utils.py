@@ -282,9 +282,10 @@ def get_court_info(address,driver):
             return CourtInfo(supported=False)
 
         court_type = get_court_type(driver, address)
-        court_name = get_court_name(court_type, driver)
-        if court_type == "unsupported" or court_name == "unsupported":
+        logger.info(f"[get_court_info] Определенный тип суда: {court_type}")
+        if court_type == "unsupported":
             return CourtInfo(supported=False, type=None, name=None, error="Сайт не поддерживается")
+        court_name = get_court_name(court_type, driver)
         return CourtInfo(supported=True, type=court_type, name=court_name)
     except Exception as e:
         logger.exception(f"[get_court_info] Ошибка: {e}")

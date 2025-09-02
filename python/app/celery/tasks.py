@@ -42,8 +42,10 @@ def verify_court_task(self, address: str):
             meta={'status': 'Проверяем адрес суда...'}
         )
         increment_court_verify_size()
+        logger.info(f"[Celery] Получение информации о суде для адреса: {address}")
         court_info = get_court_info(address, None)
-        court_name = court_info.name
+        logger.info(f"[Celery] Полученная информация о суде: {court_info}")
+        court_name = court_info.name or "Не поддерживается"
         if isinstance(court_name, str):
             result = court_name.capitalize()
         else:
@@ -52,6 +54,13 @@ def verify_court_task(self, address: str):
             decrement_court_verify_size()
             raise RuntimeError(result)
         logger.info(f"[Celery] Задача {self.request.id} завершена успешно")
+        if court_name == "Не поддерживается":
+            logger.warning(f"[Celery] Адрес суда не поддерживается: {address}")
+            return {
+                'status': 'unsupported',
+                'result': result,
+                'task_id': self.request.id
+            }
         decrement_court_verify_size()
         return {
             'status': 'success',

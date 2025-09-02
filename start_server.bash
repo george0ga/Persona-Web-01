@@ -4,7 +4,7 @@ set -euo pipefail
 IMAGE="${IMAGE:-persona-api}"          # образ API/worker
 API_NAME="${API_NAME:-persona-api}"
 WORKER_NAME="${WORKER_NAME:-persona-worker}"
-REDIS_NAME="${REDIS_NAME:-redis}"         # имя контейнера Redis (существующий или будет создан)
+REDIS_NAME="${REDIS_NAME:-persona-redis}"        # имя контейнера Redis (существующий или будет создан)
 NETWORK="${NETWORK:-persona-net}"
 
 API_PORT="${API_PORT:-8000}"              # внешний порт хоста -> 8000 внутри API

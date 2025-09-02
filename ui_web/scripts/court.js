@@ -90,16 +90,23 @@ async function addCourt() {
         input.placeholder = "Ожидайте...";
         input.disabled = true;
       }
-      else if (data.status === "error") {
+      else if (data.status === "unsupported") {
         checkBtn.disabled = false;
         addBtn.disabled = false;
         input.placeholder = "URL для проверки";
         input.disabled = false;
+        addBtn.querySelector('.btn-text').classList.remove('hidden');
+        addBtn.querySelector('.btn-loader').classList.add('hidden');
         showToast("Ошибка при проверке суда. Сайт не поддерживает парсинг.");
+        eventSource.close();
       }
     };
 
     eventSource.onerror = (err) => {
+      checkBtn.disabled = false;
+      addBtn.disabled = false;
+      input.placeholder = "URL для проверки";
+      input.disabled = false;
       showToast("Ошибка соединения с сервером.");
       eventSource.close();
     };
