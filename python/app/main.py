@@ -1,3 +1,11 @@
+import os
+os.environ.setdefault("ATEN_CPU_CAPABILITY", "default")
+os.environ.setdefault("ATEN_NO_MKL", "1")
+os.environ.setdefault("ATEN_NO_MKLDNN", "1")
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
+
+
 import uvicorn
 from fastapi import FastAPI
 

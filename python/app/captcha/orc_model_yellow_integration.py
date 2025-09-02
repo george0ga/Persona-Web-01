@@ -6,10 +6,15 @@ os.environ["ATEN_NO_MKL"] = "1"
 os.environ["ATEN_NO_MKLDNN"] = "1"
 
 import torch
+torch.backends.mkldnn.enabled = False
 from torchvision import transforms
 from PIL import Image
 from io import BytesIO
-import os
+required_version = "1.8.2+cpu"
+if torch.__version__ != required_version:
+    raise RuntimeError(f"Найдена torch {torch.__version__}, требуется {required_version}")
+
+print("Версия PyTorch ок:", torch.__version__)
 
 from app.captcha.model_def_yellow import BetterCRNN, CHARS
 

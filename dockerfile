@@ -1,4 +1,4 @@
-FROM python:3.11-slim-bookworm
+FROM python:3.9-slim-bookworm
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -40,7 +40,8 @@ WORKDIR /app
 
 COPY python/app/requirements.txt /tmp/requirements.txt
 RUN pip install --upgrade pip \
- && pip install -r /tmp/requirements.txt
+ && pip install --no-cache-dir -r /tmp/requirements.txt \
+      -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html
 
 COPY python/app /app/app
 

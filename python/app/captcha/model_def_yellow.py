@@ -6,6 +6,13 @@ os.environ["ATEN_NO_MKL"] = "1"
 os.environ["ATEN_NO_MKLDNN"] = "1"
 
 import torch
+torch.backends.mkldnn.enabled = False
+torch.set_num_threads(1)
+required_version = "1.8.2+cpu"
+if torch.__version__ != required_version:
+    raise RuntimeError(f"Найдена torch {torch.__version__}, требуется {required_version}")
+
+print("Версия PyTorch ок:", torch.__version__)
 
 CHARS = "0123456789"
 num_classes = len(CHARS)
