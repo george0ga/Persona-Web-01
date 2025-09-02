@@ -178,3 +178,8 @@ table.tablcont thead tr.t-header td {
 
 .tablcont a { text-decoration: none; color: #4da6ff; }
 .tablcont a:hover { text-decoration: underline; }
+
+.court-tree-link-img {
+  width: 48px;
+  height: 48px;
+}

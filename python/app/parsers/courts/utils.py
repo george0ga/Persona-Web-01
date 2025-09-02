@@ -218,7 +218,8 @@ def clean_table(html_or_tag: Union[str, Tag]) -> Optional[Tag]:
         strip_attrs(el)
 
     for img in table.find_all("img", src="/images/arow.gif"):
-        img["src"] = "assets/images/case.gif"
+        img["src"] = "assets/images/case.png"
+        img["class"] = "court-tree-link-img"
 
     return table
 
