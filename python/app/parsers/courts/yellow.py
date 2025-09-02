@@ -99,9 +99,10 @@ def check_invalid_captcha_input(driver, name, current_subcategory):
         )
         
         content = driver.find_elements(By.ID, "content")
-        if ("НЕВЕРНЫЙ ФОРМАТ ЗАПРОСА" in content.text.upper()):
-            logger.error(f"[check_invalid_captcha_input] Капча решена верно. На странице ошибка с запросом.")
-            return True
+        for el in content:
+            if "НЕВЕРНЫЙ ФОРМАТ ЗАПРОСА" in el.text.upper():
+                logger.error(f"[check_invalid_captcha_input] Капча решена верно. На странице ошибка с запросом.")
+                return True
 
         error_elements = driver.find_elements(By.ID, "error")
         for el in error_elements:
