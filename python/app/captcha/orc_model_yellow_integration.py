@@ -1,3 +1,10 @@
+import os
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["MKLDNN_VERBOSE"] = "0"
+os.environ["ATEN_NO_MKL"] = "1"
+os.environ["ATEN_NO_MKLDNN"] = "1"
+
 import torch
 from torchvision import transforms
 from PIL import Image
