@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api/v1",tags=["metrics"])
 @router.get("/metrics")
 async def metrics(request: Request):
     """
-    Эндпоинт для метрик Prometheus
+    Эндпоинт для метрик Prometheus(WIP)
     
     Возвращает все метрики приложения в формате Prometheus.
     Используется для создания графиков в Grafana, Prometheus UI и других инструментах.
@@ -34,7 +34,7 @@ async def metrics(request: Request):
 @router.get("/metrics/queue_size")
 async def get_queue_size(request: Request):
     """
-    Эндпоинт для получения размера очереди задач
+    Эндпоинт для получения размера очереди задач Celery и Redis
     """
     result = {}
     result["redis_courts"] = get_queue_size_redis("court_checks") or 0

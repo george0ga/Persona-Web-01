@@ -57,6 +57,10 @@ def reset_check_time_metrics():
         r.set("celery_court_last_check_time_blue", 0)
         r.set("celery_court_last_check_time_yellow", 0)
 
+def reset_courts_queue_count():
+    r.set("celery_court_check_size", 0)
+    r.set("celery_court_verify_size", 0)
+
 async def reset_metrics_timer(timer):
     while True:
         await asyncio.sleep(timer)

@@ -37,23 +37,23 @@ function getCheckTimeState(data,type) {
     return { status: 'unknown', level: 0, reason: 'некорректные данные', metrics: { blue_time, yellow_time } };
   }
 
-  if ((blue_time === 0 && yellow_time === 0)){
+  if ((blue_time === 0 || yellow_time === 0)){
     return {status:'unknown',level: 5, reason:'unknown ', metrics: { blue_time, yellow_time } };
   }
 
-  if ((blue_time <= 60 && yellow_time <= 80)){
+  if ((blue_time <= 60 || yellow_time <= 80)){
     return {status:'excellent',level: 5, reason:'очень быстро', metrics: { blue_time, yellow_time } };
   }
 
-  if ((blue_time <= 120 && yellow_time <= 400)) {
+  if ((blue_time <= 120 || yellow_time <= 400)) {
     return { status: 'good', level: 4, reason: 'хорошо', metrics: { blue_time, yellow_time } };
   }
 
-  if((blue_time <= 180 && yellow_time <= 800)){
+  if((blue_time <= 180 || yellow_time <= 800)){
     return { status: 'average', level: 3, reason: 'средне', metrics: { blue_time, yellow_time } };
   }
 
-  if((blue_time <= 240 && yellow_time <= 1200)){
+  if((blue_time > 180 || yellow_time > 800)){
     return { status: 'bad', level: 1, reason: 'очень медленно', metrics: { blue_time, yellow_time } };
   }
   return { status: 'unknown', level: 0, reason: 'error', metrics: { blue_time, yellow_time } };

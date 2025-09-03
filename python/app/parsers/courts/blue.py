@@ -249,7 +249,7 @@ def parse_court_blue(driver, address,court_name,fullname,set_status):
         #Уголовные, участник 
         logger.info(f"[parse_court_blue] Проверка уголовных дел (участник)")
         #status_manager.update_status(task_id,f"Проверка уголовных дел (участник)",name_to_check)
-        set_status(f"Проверка уголовных дел (участник) : {name_to_check}",court_name)
+        set_status(f"Проверка уголовных дел (участник) по ФИО: {name_to_check}",court_name)
         verify_page(driver)
         ugolov_parts_table = parse_category(driver,name_to_check,"U1_PARTS__NAMESS")
         verify_page(driver)
@@ -257,7 +257,7 @@ def parse_court_blue(driver, address,court_name,fullname,set_status):
 
         #Административыне и гражданские 
         logger.info(f"[parse_court_blue] Проверка административыных и гражданских дел")
-        set_status(f"Проверка административыных и гражданских дел : {name_to_check}",court_name)
+        set_status(f"Проверка административыных и гражданских дел по ФИО: {name_to_check}",court_name)
         second_button = driver.find_elements(By.ID,"type_1")
         second_button[0].click()
         verify_page(driver)
@@ -267,7 +267,7 @@ def parse_court_blue(driver, address,court_name,fullname,set_status):
 
         #Дела об административных правонарушениях
         logger.info(f"[parse_court_blue] Проверка административыных правонарушений")
-        set_status(f"Проверка административыных правонарушений : {name_to_check}",court_name)
+        set_status(f"Проверка административыных правонарушений по ФИО: {name_to_check}",court_name)
 
         third_button = driver.find_elements(By.ID,"type_2")
         third_button[0].click()
@@ -278,7 +278,7 @@ def parse_court_blue(driver, address,court_name,fullname,set_status):
 
         #Производство по делам
         logger.info(f"[parse_court_blue] Проверка производств по делам")
-        set_status(f"Проверка производств по делам : {name_to_check}",court_name)
+        set_status(f"Проверка производств по делам по ФИО: {name_to_check}",court_name)
 
         fourth_button = driver.find_elements(By.ID,"type_3")
         fourth_button[0].click()
@@ -298,5 +298,5 @@ def parse_court_blue(driver, address,court_name,fullname,set_status):
             "Производство по делам": proizv_table
         }
         logger.success(f"[parse_court_blue] Таблица готова.")
-        set_status(f"Проверка по ФИО завершена : {name_to_check}",court_name)
+        set_status(f"Проверка по ФИО {name_to_check} завершена",court_name)
     return court_results

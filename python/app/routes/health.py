@@ -34,6 +34,7 @@ def check_health_access(request: Request):
 @router.get("/health")
 @limiter.limit(settings.RATE_LIMIT_HEALTH)
 async def health_check(request: Request):
+    """Общая проверка здоровья сервиса"""
     check_health_access(request)
     try:
         check_manager_ok = request.app.state.check_manager is not None
@@ -68,11 +69,13 @@ async def health_check(request: Request):
 @router.get("/health/ready")
 @limiter.limit(settings.RATE_LIMIT_HEALTH)
 async def readiness_check(request: Request):
+    """Проверка готовности сервиса"""
     check_health_access(request)
     return {"status": "ready", "timestamp": time.time()}
 
 @router.get("/health/live")
 @limiter.limit(settings.RATE_LIMIT_HEALTH)
 async def liveness_check(request: Request):
+    """Проверка живости сервиса"""
     check_health_access(request)
     return {"status": "alive", "timestamp": time.time()}

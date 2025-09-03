@@ -1,4 +1,5 @@
-
+const check_end_sound = new Audio('assets/sounds/check_end_sound.mp3');
+const checkbox = document.querySelector('.check-box-notify input[type="checkbox"]');
 let courts = [];
 let courtUrls = [];
 // ---------------------- Добавление суда ----------------------
@@ -275,7 +276,11 @@ async function checkCourts() {
           html: combinedTree,         // дерево: Суд → ФИО → Категория → HTML
           urlMap: urlMap                // массив адресов
         };
-
+        if (checkbox.checked){
+          check_end_sound.volume = 0.25;
+          check_end_sound.play();
+          showBrowserNotification("Проверка завершена!", "Результаты готовы!");
+        }
         showFinalResult();
         renderCourtResult(window.lastCourtResult);
         eventSource.close();
@@ -477,4 +482,17 @@ function showFinalResult() {
   document.getElementById("initial-placeholder").classList.add("hidden");
   document.getElementById("checking-state").classList.add("hidden");
   document.getElementById("result-ready").classList.remove("hidden");
+}
+
+// ---------------------- Уведомления браузера ----------------------
+function showBrowserNotification(title, body) {
+  if (Notification.permission === "granted") {
+    new Notification(title, { body });
+  } else if (Notification.permission !== "denied") {
+    Notification.requestPermission().then(permission => {
+      if (permission === "granted") {
+        new Notification(title, { body });
+      }
+    });
+  }
 }

@@ -35,7 +35,7 @@ def timing_decorator(func):
         return result
     return wrapper
 
-@timing_decorator
+ 
 def check_unexpected_alert(driver,):
     try:
         alert = driver.switch_to.alert
@@ -57,7 +57,7 @@ def check_unexpected_alert(driver,):
         logger.success(f"[check_unexpected_alert] alert не появился")
         return
 
-@timing_decorator
+ 
 def check_503(driver):
     logger.info(f"[check_503] Проверка на ошибку 503.")
     max_retries=15
@@ -77,7 +77,7 @@ def check_503(driver):
     except RuntimeError as e:
         logger.error(f"[check_503] Ошибка 503. После {max_retries} доступ получить не удалось. ")
 
-@timing_decorator
+ 
 def check_502(driver):
     logger.info(f"[check_502] Проверка на ошибку 502.")
     try:
@@ -94,7 +94,7 @@ def check_502(driver):
     except RuntimeError as e: 
         logger.error(f"[check_502] Ошибка 502. После {MAX_RETRIES} доступ получить не удалось. ")
 
-@timing_decorator
+ 
 def check_unavailable_message(driver):
     logger.info(f"[check_unavailable_message] Проверка сообщения об отсутствии данных.")
     try:
@@ -111,7 +111,7 @@ def check_unavailable_message(driver):
         logger.success(f"[check_unavailable_message] Сообщение об отсутствии данных не обнаружено.")
         return
 
-@timing_decorator
+ 
 def make_name_initials(fullname):
     logger.info(f"[make_name_initials] Формирование вариантов ФИО из: {fullname.surname} {fullname.name} {fullname.patronymic}")
     names = []
@@ -151,7 +151,7 @@ def make_name_initials(fullname):
         logger.exception(f"[make_name_initials] Ошибка при формировании ФИО: {e}")
         return [fullname.surname]
 
-@timing_decorator
+ 
 def verify_page(driver,):
     try:
         check_unexpected_alert(driver)
@@ -161,7 +161,7 @@ def verify_page(driver,):
     except Exception as e:
         logger.error(f"[verify_page] Ошибка при проверке страницы: {e}")
 
-@timing_decorator
+ 
 def merge_html_tables(html_list):
     logger.info(f"[merge_html_tables] Начато объединение таблиц.")
     if not html_list:
@@ -223,31 +223,57 @@ def clean_table(html_or_tag: Union[str, Tag]) -> Optional[Tag]:
 
     return table
 
-@timing_decorator
+ 
 def get_court_type(driver, address):
     logger.info(f"[get_court_type] Определение типа суда по адресу: {address}")
     driver.get(address)
     verify_page(driver)
     try:
         WebDriverWait(driver, 15).until(
-            lambda d: d.find_elements(By.ID, "court_name") or d.find_elements(By.CLASS_NAME, "header__middle")
+            lambda d: d.find_elements(By.ID, "court_name") or d.find_elements(By.CLASS_NAME, "header__middle") or d.find_elements(By.CLASS_NAME, "inner-logo")
         )
         if driver.find_elements(By.ID, "court_name"):
             return "blue"
         if driver.find_elements(By.CLASS_NAME, "header__middle"):
             return "yellow"
+        if driver.find_elements(By.CLASS_NAME, "inner-logo"):
+            return "spb"
     except Exception as e:
         logger.warning(f"[get_court_type] Не удалось определить тип суда: {e}")
 
     return "unsupported"
 
-@timing_decorator
+
+def wd_safe_wait(driver,wait_time,condition,type,element):
+    try:
+        WebDriverWait(driver, wait_time).until(
+            condition((type, element))
+        )
+    except Exception as e:
+        logger.warning(f"[safe_wait] Превышено время ожидания {element}")
+        raise
+
+def wd_safe_click(driver,wait_time,condition,by,element):
+    try:
+        WebDriverWait(driver, wait_time).until(
+            condition((by, element))
+        ).click()
+    except Exception as e:
+        logger.warning(f"[safe_click] Превышено время ожидания {element}")
+        raise
+
+def send_with_delay(driver, element, text, delay=0.05):
+    element.clear()
+    for char in text:
+        element.send_keys(char)
+        time.sleep(delay)
+
 def get_court_name(court_type,driver):
     logger.info(f"[get_court_name] Получение названия суда")
     verify_page(driver)
     try:
         WebDriverWait(driver, 15).until(
-            lambda d: d.find_elements(By.ID, "court_name") or d.find_elements(By.CLASS_NAME, "header__middle")
+            lambda d: d.find_elements(By.ID, "court_name") or d.find_elements(By.CLASS_NAME, "header__middle") or d.find_elements(By.CLASS_NAME, "inner-logo")
         )
         if court_type == "blue":
             elements = driver.find_elements(By.ID, "court_name")
@@ -261,13 +287,15 @@ def get_court_name(court_type,driver):
                 name = elements[0].text.strip()
                 logger.success(f"[get_court_name] Название суда (yellow): {name}")
                 return name
+        if court_type == "spb":
+            logger.success(f"[get_court_name] Название суда Мировые судьи Санкт-Петербурга")
+            return "Мировые судьи Санкт-Петербурга"
         logger.error(f"[get_court_name] Не удалось определить название суда! Cайт не поддерживается или произошла ошибка")
         return "unsupported"
     except Exception as e:
         logger.error(f"[get_court_name] Ошибка при получении названия суда: {e}")
         return "unsupported"
 
-@timing_decorator
 def get_court_info(address,driver):
     need_to_close = False
     if driver is None:

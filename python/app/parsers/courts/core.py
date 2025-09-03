@@ -5,6 +5,7 @@ from app.services.browser import create_driver
 from app.parsers.courts.blue import parse_court_blue
 from app.parsers.courts.yellow import parse_court_yellow
 from app.parsers.courts.utils import get_court_info
+from app.parsers.courts.spb import parse_court_spb
 from app.utils.logger import logger
 from app.schemas.schemas import PersonInitials 
 from app.config.settings import settings
@@ -26,6 +27,9 @@ def parse_courts(address,fullname,set_status,headless=settings.HEADLESS):
         elif court_type == "yellow":
             result = parse_court_yellow(driver, address,court_info.name, fullname,set_status)
             set_court_last_check_time(court_type, time.monotonic() - start_time)
+            return result
+        elif court_type == "spb":
+            result = parse_court_spb(driver,"https://mirsud.spb.ru/cases/?type=civil&id=&full_name=","Мировые судьи Санкт-Петербурга",fullname,set_status)
             return result
         else:
             return {f"Сайт {address}": {"__error__": "Сайт не поддерживается"}}

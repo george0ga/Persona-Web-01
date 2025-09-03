@@ -5,6 +5,7 @@ __pycache__/
 *.pyo
 *.pyd
 node_modules
+.pytest_cache/
 
 # Логи
 python/logs/
@@ -14,4 +15,11 @@ python/logs/
 excalidraw/
 .vscode/
 
+# GitHub
 .github/
+
+# Test result
+python/result.json
+
+# Python 3.9 venv
+python/venv/

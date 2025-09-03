@@ -1,6 +1,6 @@
 import asyncio
 import prometheus_client
-from app.metrics.redis_client import get_queue_size_redis,reset_metrics_timer
+from app.metrics.redis_client import get_queue_size_redis,reset_metrics_timer,reset_courts_queue_count
 
 from app.utils.logger import logger
 
@@ -23,5 +23,6 @@ async def start_queue_monitor():
     asyncio.create_task(monitor_queue_size())
 
 async def start_metrics():
+    reset_courts_queue_count()
     await start_queue_monitor()
     asyncio.create_task(reset_metrics_timer(28800))  # Сброс каждые 28800 секунд

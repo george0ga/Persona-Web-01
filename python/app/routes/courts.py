@@ -13,7 +13,36 @@ router = APIRouter(prefix="/api/v1", tags=["courts"])
 @limiter.limit(settings.RATE_LIMIT_API)
 async def check_courts(data: CourtCheckModel, request: Request):
     """
-    Проверка судов.
+    Проверка списка адресов судов
+    
+    Этот эндпоинт принимает список адресов судов и ФИО для проверки наличия дел на указанных судах.
+    После валидации данных, задача проверки добавляется в очередь Celery, и возвращается ID задачи для отслеживания статуса.
+    
+    Args:
+        data: Данные для проверки
+            - address: Список URL адресов судов для проверки
+            - fullname: ФИО для проверки (объект PersonInitials)
+    
+    Returns:
+        CourtResponseModel: Результат проверки с названием суда
+        
+    Raises:
+        HTTPException 422: При ошибках валидации данных
+        HTTPException 500: При ошибках проверки
+        
+    Example:
+        ```json
+        {
+            "address": [
+                "https://k-h2.ros.msudrf.ru"
+                ],
+            "fullname": {
+                "surname": "Степаненко",
+                "name": "Михаил",
+                "patronymic": "Евгеньевич"
+            }
+        }
+        ```
     """
     if isinstance(data.fullname, dict):
         data.fullname = PersonInitials(**data.fullname)
