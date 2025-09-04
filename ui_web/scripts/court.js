@@ -1,6 +1,7 @@
 const check_end_sound = new Audio('assets/sounds/check_end_sound.mp3');
 const checkbox = document.querySelector('.check-box-notify input[type="checkbox"]');
 let courts = [];
+let courts_name_to_task_id = {};
 let courtUrls = [];
 // ---------------------- Добавление суда ----------------------
 async function addCourt() {
@@ -46,10 +47,10 @@ async function addCourt() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ address: value })
     });
-    console.log("Fetch response:", response);
+    //console.log("Fetch response:", response);
 
     const result = await response.json();
-    console.log("Fetch result:", result);
+    //console.log("Fetch result:", result);
     if (!result.data || !result.data.task_id) {
       showToast(result.message || "Не удалось получить task_id.");
       return;
@@ -66,7 +67,7 @@ async function addCourt() {
         data = event.data;
       }
       console.log("SSE Update:", data);
-
+      
       if (data.error) {
         showToast(data.error);
         eventSource.close();
@@ -161,15 +162,11 @@ function normalizeCourtName(name) {
     .toLowerCase();
 }
 
-function findCourtStatusElement(court_name) {
-  if (!court_name) return null;
-  const target = normalizeCourtName(court_name);
-  const items = document.querySelectorAll('.court-check-status-item');
-  for (const item of items) {
-    const nameEl = item.querySelector('.court-check-status-name');
-    if (nameEl && normalizeCourtName(nameEl.textContent) === target) {
-      return item.querySelector('.court-check-status');
-    }
+function findCourtStatusElement(task_id) {
+  if (!task_id) return null;
+  const item = document.getElementById(task_id);
+  if (item) {
+    return item.querySelector('.court-check-status');
   }
   return null;
 }
@@ -205,12 +202,14 @@ async function checkCourts() {
   showCheckingState();
   const courtStatusList = document.getElementById("court-check-status-list");
   courtStatusList.innerHTML = "";
-  courts.forEach(court => {
+  courts.forEach((court, idx) => {
     const item = document.createElement("div");
     item.className = "court-check-status-item";
+    // Assign a placeholder id for now; will update with real task_id during progress updates
+    item.setAttribute("id", `court-status-item-${idx}`);
     item.innerHTML = `
       <span class="court-check-status-name">${court.name || court}</span>
-      <span class="court-check-status">В очереди...</span>
+      <span class="court-check-status status-queue">В очереди...</span>
     `;
     courtStatusList.appendChild(item);
   });
@@ -232,6 +231,8 @@ async function checkCourts() {
       return;
     }
     saveTaskId(result.data.task_id);
+    firstResponse = true;
+    
     const eventSource = new EventSource(`${API_URL}/courts/check/stream/${result.data.task_id}`);
     eventSource.onmessage = (event) => {
       let data;
@@ -292,10 +293,33 @@ async function checkCourts() {
           for (let i = 0; i < subtasks.length; i++) {
             const subtask = subtasks[i];
             const court_name = subtask.court_name;
-            const status_text = subtask.status;
-            const el = findCourtStatusElement(court_name);
+            const task_id = subtask.task_id;
+            let status_text = subtask.status;
+            if(firstResponse === true){
+              courts_name_to_task_id[i] = task_id;
+              const statusItems = document.querySelectorAll('.court-check-status-item');
+              if (statusItems[i]) {
+                statusItems[i].id = task_id;
+              }
+            }
+            const el = findCourtStatusElement(task_id);
+            if(status_text === "PENDING"){
+              status_text = "В очереди...";
+            }
+            if(status_text === "STARTED" ){
+              el.classList.remove("status-queue");
+              el.classList.add("status-progress");
+              status_text = "Подготовка...";
+            }
+            if(status_text === "success" ){
+              el.classList.remove("status-progress");
+              el.classList.add("status-success");
+              status_text = "Проверка завершена";
+            }
+            
             if (el) el.textContent = status_text;
           }
+          firstResponse = false;
         }
     };
 

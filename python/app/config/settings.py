@@ -27,7 +27,7 @@ class Settings:
     # Rate limiting
     RATE_LIMIT_DEFAULT = "10/minute"
     RATE_LIMIT_HEALTH = "30/minute"
-    RATE_LIMIT_API = "5/minute"
+    RATE_LIMIT_API = "10/minute"
     
     # Сервер настройки
     HOST = "0.0.0.0"

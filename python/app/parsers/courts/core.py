@@ -30,6 +30,7 @@ def parse_courts(address,fullname,set_status,headless=settings.HEADLESS):
             return result
         elif court_type == "spb":
             result = parse_court_spb(driver,"https://mirsud.spb.ru/cases/?type=civil&id=&full_name=","Мировые судьи Санкт-Петербурга",fullname,set_status)
+            set_court_last_check_time(court_type, time.monotonic() - start_time)
             return result
         else:
             return {f"Сайт {address}": {"__error__": "Сайт не поддерживается"}}

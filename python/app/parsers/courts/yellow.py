@@ -1280,3 +1280,41 @@ def parse_court_yellow(driver, address,court_name,fullname,set_status):
     if(court_type == "unavailable"):
         return{f"Сайт {address}": {"__error__": "Ошибка при работе с судом. Сайт не поддерживается"}}
     return {f"Сайт {address}": {"__error__": "Ошибка при работе с судом. Не удалось определить тип суда"}}
+
+
+if __name__ == "__main__":
+    import json
+    from selenium import webdriver
+    from selenium.webdriver.chrome.service import Service
+    from webdriver_manager.chrome import ChromeDriverManager
+    from fake_useragent import UserAgent
+    from app.schemas.schemas import PersonInitials
+    def create_driver(page_load_strategy="normal", headless=True):
+        user_agent = UserAgent()
+        options = webdriver.ChromeOptions()
+        options.page_load_strategy = page_load_strategy
+        options.add_argument(f"user-agent={user_agent.random}")
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("--ignore-certificate-errors")
+        options.add_argument("--log-level=3")
+        if headless:
+            options.add_argument("--headless=new")
+            options.add_argument("--window-size=1920,1080")
+            options.add_argument("--disable-gpu")
+            options.add_argument("--no-sandbox")
+            options.add_argument("--disable-dev-shm-usage")
+        # Используем webdriver_manager для автоматической загрузки актуального chromedriver
+        logger.info(f" Создание Chrome-драйвера (headless={headless}, strategy='{page_load_strategy}')")
+        try:
+            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+            logger.success(" Драйвер успешно создан")
+            return driver
+        except Exception as e:
+            logger.exception(f" Ошибка при создании драйвера: {e}")
+            raise
+    driver = create_driver("eager", False)
+    def set_status(message, court_name):
+        pass
+    result = parse_court_yellow(driver, "https://pavlovsky--nnov.sudrf.ru", "court_name", PersonInitials(surname="Ищенко", name="Кирилл", patronymic="Васильевич"), set_status)
+    with open("result.json", "w", encoding="utf-8") as f:
+        json.dump(result, f, ensure_ascii=False, indent=2)

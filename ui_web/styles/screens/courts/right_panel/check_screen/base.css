@@ -62,7 +62,7 @@ body.light-theme .court-check-status {
     color: #42a5f5; /* синий */
 }
 .court-check-status.status-success {
-    color: #43a047; /* зелёный */
+    color: #2cad33; /* зелёный */
 }
 .court-check-status.status-error {
     color: #e53935; /* красный */

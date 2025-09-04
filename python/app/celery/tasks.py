@@ -56,6 +56,7 @@ def verify_court_task(self, address: str):
         logger.info(f"[Celery] Задача {self.request.id} завершена успешно")
         if court_name == "Не поддерживается":
             logger.warning(f"[Celery] Адрес суда не поддерживается: {address}")
+            decrement_court_verify_size()
             return {
                 'status': 'unsupported',
                 'result': result,

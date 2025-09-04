@@ -1,3 +1,16 @@
+// Кнопка для раскрытия/сворачивания инструкции "Как проверять суды"
+document.addEventListener('DOMContentLoaded', function() {
+  const toggleBtn = document.getElementById('toggle-courts-help');
+  const helpList = document.getElementById('courts-help-list');
+  const arrow = document.getElementById('help-arrow');
+  if (toggleBtn && helpList && arrow) {
+    toggleBtn.addEventListener('click', function() {
+      const isOpen = helpList.style.display === 'block';
+      helpList.style.display = isOpen ? 'none' : 'block';
+      arrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+    });
+  }
+});
 const helpOverlay = document.getElementById("help-overlay");
 
 document.addEventListener("DOMContentLoaded", () => {

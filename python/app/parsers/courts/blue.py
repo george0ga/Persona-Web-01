@@ -5,6 +5,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from urllib.parse import urlparse, parse_qsl, urlencode, urlunparse
 
 import time
+import torch
+print(torch.__file__)
 
 from app.captcha.ocr_model_blue_integration import predict_captcha_from_bytes
 from app.parsers.courts.utils import check_502,check_503, make_name_initials
@@ -77,7 +79,7 @@ def input_captcha(driver):
 def extract_table_html(driver):
     logger.info(f"[extract_table_html] Получение таблицы дел.")
     try:
-        WebDriverWait(driver,10).until(EC.presence_of_element_located((By.ID,"search_results")))
+        WebDriverWait(driver,60).until(EC.presence_of_element_located((By.ID,"search_results")))
     except Exception as e:
         logger.error(f"[extract_table_html] Не удалось загрузить таблицу дел.")
     soup = BeautifulSoup(driver.page_source, "html.parser")
@@ -168,7 +170,7 @@ def verify_page(driver):
 
 def get_all_cases(driver,pages_count):
     logger.info(f"[get_all_cases] Парсинг результата.")
-    WebDriverWait(driver, 40).until(
+    WebDriverWait(driver, 120).until(
             lambda d: d.find_elements(By.CLASS_NAME, "case-count") or d.find_elements(By.CLASS_NAME, "search-error")
         )
     errors = driver.find_elements(By.CLASS_NAME,"search-error")
@@ -300,3 +302,41 @@ def parse_court_blue(driver, address,court_name,fullname,set_status):
         logger.success(f"[parse_court_blue] Таблица готова.")
         set_status(f"Проверка по ФИО {name_to_check} завершена",court_name)
     return court_results
+
+
+if __name__ == "__main__":
+    import json
+    from selenium import webdriver
+    from selenium.webdriver.chrome.service import Service
+    from webdriver_manager.chrome import ChromeDriverManager
+    from fake_useragent import UserAgent
+    from app.schemas.schemas import PersonInitials
+    def create_driver(page_load_strategy="normal", headless=False):
+        user_agent = UserAgent()
+        options = webdriver.ChromeOptions()
+        options.page_load_strategy = page_load_strategy
+        options.add_argument(f"user-agent={user_agent.random}")
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("--ignore-certificate-errors")
+        options.add_argument("--log-level=3")
+        if headless:
+            options.add_argument("--headless=new")
+            options.add_argument("--window-size=1920,1080")
+            options.add_argument("--disable-gpu")
+            options.add_argument("--no-sandbox")
+            options.add_argument("--disable-dev-shm-usage")
+        # Используем webdriver_manager для автоматической загрузки актуального chromedriver
+        logger.info(f" Создание Chrome-драйвера (headless={headless}, strategy='{page_load_strategy}')")
+        try:
+            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+            logger.success(" Драйвер успешно создан")
+            return driver
+        except Exception as e:
+            logger.exception(f" Ошибка при создании драйвера: {e}")
+            raise
+    driver = create_driver("eager", False)
+    def set_status(message, court_name):
+        pass
+    result = parse_court_blue(driver, "https://4len.nsk.msudrf.ru/", "court_name", PersonInitials(surname="Акулов", name="Антон", patronymic="Иванович"), set_status)
+    with open("result.json", "w", encoding="utf-8") as f:
+        json.dump(result, f, ensure_ascii=False, indent=2)

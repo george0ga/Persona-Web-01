@@ -72,19 +72,23 @@ function setCourtCheckTimeStatus(status) {
 function setTooltipData(data) {
   blue_time = Math.round(data.celery_court_last_check_time_blue);
   yellow_time = Math.round(data.celery_court_last_check_time_yellow);
+  spb_time = Math.round(data.celery_court_last_check_time_spb);
   blue_text = "Мировые (Центр. Рег.): Данные отсутствуют";
   yellow_text = "Суды общ. юрисд.: Данные отсутствуют";
+  spb_text = "Суды СПБ: Данные отсутствуют";
   if (blue_time !== 0){
     blue_text = `Мировые (Центр. Рег.): ≈ ${blue_time} сек.`;
   }
   if (yellow_time !== 0) {
     yellow_text = `Суды общ. юрисд.: ≈ ${yellow_time} сек.`;
   }
-
+  if(spb_time !== 0) {
+    spb_text = `Суды СПБ: ≈ ${spb_time} сек.`;
+  }
   document.getElementById('queue-status-text').innerHTML =
     `Задачи в работе: ${data.celery_check_courts_queue_size}<br>Задачи в очереди: ${data.redis_check_courts_queue_size}`;
   document.getElementById('check-time-status-text').innerHTML =
-    `Среднее время проверок судов:<br>${blue_text}<br>${yellow_text}`;
+    `Среднее время проверок судов:<br>${blue_text}<br>${yellow_text}<br>${spb_text}`;
 }
 
 function setTooltipDataUnavailable(){

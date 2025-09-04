@@ -76,13 +76,15 @@ async def stream_queue_size(request: Request):
             result["verify"] = get_court_verify_size() or 0
             result["celery_court_last_check_time_blue"] = float(get_court_last_check_time("blue") or 0.0)
             result["celery_court_last_check_time_yellow"] = float(get_court_last_check_time("yellow") or 0.0)
+            result["celery_court_last_check_time_spb"] = float(get_court_last_check_time("spb") or 0.0)
             data = {
                 "redis_check_courts_queue_size": result["redis_courts"],
                 "redis_verify_courts_queue_size": result["redis_verify"],
                 "celery_check_courts_queue_size": result["court"],
                 "celery_verify_courts_queue_size": result["verify"],
                 "celery_court_last_check_time_blue": result["celery_court_last_check_time_blue"],
-                "celery_court_last_check_time_yellow": result["celery_court_last_check_time_yellow"]
+                "celery_court_last_check_time_yellow": result["celery_court_last_check_time_yellow"],
+                "celery_court_last_check_time_spb": result["celery_court_last_check_time_spb"]
             }
             yield f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
             await asyncio.sleep(15)  # интервал обновления в секундах

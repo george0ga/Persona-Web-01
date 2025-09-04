@@ -56,6 +56,7 @@ def reset_check_time_metrics():
         logger.info("Очереди пусты, сбрасываем метрики времени проверок судов")
         r.set("celery_court_last_check_time_blue", 0)
         r.set("celery_court_last_check_time_yellow", 0)
+        r.set("celery_court_last_check_time_spb", 0)
 
 def reset_courts_queue_count():
     r.set("celery_court_check_size", 0)
